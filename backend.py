@@ -233,6 +233,10 @@ def health():
 def serve_index():
     return send_from_directory(BASE_DIR, 'index.html')
 
+@app.route('/dashboard')
+def serve_dashboard():
+    return send_from_directory(BASE_DIR, 'dashboard.html')
+
 @app.route('/<path:filename>')
 def serve_static_files(filename):
     # Serve files (css, js, images). Security: prevent directory traversal.
