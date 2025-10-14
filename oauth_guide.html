@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شرح OAuth - بوت سكرو</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+            direction: rtl;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+        }
+        .bot-section {
+            border-left-color: #28a745;
+        }
+        .user-section {
+            border-left-color: #007bff;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 5px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-bot {
+            background: #28a745;
+            color: white;
+        }
+        .btn-user {
+            background: #007bff;
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+        .code {
+            background: #f1f3f4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 شرح الفرق بين تثبيت البوت وتسجيل دخول المستخدم</h1>
+        
+        <div class="section bot-section">
+            <h2>🤖 1. تثبيت البوت في السيرفر</h2>
+            <p><strong>الهدف:</strong> إضافة البوت لسيرفر Discord</p>
+            <p><strong>URL بتاعك:</strong></p>
+            <div class="code">
+https://discord.com/oauth2/authorize?client_id=1424342801801416834&permissions=3941734153713728&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fauth%2Fdiscord%2Fcallback&integration_type=0&scope=guilds.join+email+bot+guilds.members.read
+            </div>
+            <a href="https://discord.com/oauth2/authorize?client_id=1424342801801416834&permissions=3941734153713728&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fauth%2Fdiscord%2Fcallback&integration_type=0&scope=guilds.join+email+bot+guilds.members.read" 
+               class="btn btn-bot" target="_blank">
+                🤖 تثبيت البوت
+            </a>
+        </div>
+
+        <div class="section user-section">
+            <h2>👤 2. تسجيل دخول المستخدم</h2>
+            <p><strong>الهدف:</strong> المستخدم يسجل دخول عشان يشوف نقاطه</p>
+            <p><strong>URL الموقع:</strong></p>
+            <div class="code" id="user-oauth-url">جاري تحميل...</div>
+            <a href="/auth/discord/login" class="btn btn-user" id="user-login-btn">
+                👤 تسجيل دخول المستخدم
+            </a>
+        </div>
+
+        <div class="section">
+            <h2>🔍 اختبار النظام</h2>
+            <div id="test-results"></div>
+            <button onclick="testAll()" class="btn btn-user">🧪 اختبر كل شيء</button>
+            <button onclick="showCurrentURL()" class="btn" style="background: #6c757d; color: white;">📋 إظهار URL الحقيقي</button>
+        </div>
+
+        <div class="section">
+            <h2>📝 الخطوات المطلوبة</h2>
+            <ol>
+                <li><strong>أولاً:</strong> تثبيت البوت في السيرفر (الرابط الأخضر أعلاه)</li>
+                <li><strong>ثانياً:</strong> المستخدمين يسجلوا دخول في الموقع (الرابط الأزرق)</li>
+                <li><strong>ثالثاً:</strong> يشوفوا نقاطهم في اللوحة الشخصية</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        async function testAll() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<div class="status">🔄 جاري الاختبار...</div>';
+
+            try {
+                // Test server health
+                const healthResponse = await fetch('/health');
+                if (!healthResponse.ok) throw new Error('Server not responding');
+
+                // Test auth endpoint
+                const authResponse = await fetch('/api/auth/me');
+                const authData = await authResponse.json();
+
+                // Test stats
+                const statsResponse = await fetch('/api/stats');
+                const statsData = await statsResponse.json();
+
+                results.innerHTML = `
+                    <div class="status success">✅ الخادم يعمل بشكل طبيعي</div>
+                    <div class="status success">✅ OAuth endpoints متاحة</div>
+                    <div class="status success">✅ API يعمل - السيرفرات: ${statsData.guild_count}</div>
+                    <div class="status ${authData.authenticated ? 'success' : 'error'}">
+                        ${authData.authenticated ? 
+                          '✅ المستخدم مسجل دخول: ' + authData.user.username : 
+                          'ℹ️ لم يتم تسجيل الدخول (طبيعي)'}
+                    </div>
+                `;
+            } catch (error) {
+                results.innerHTML = `<div class="status error">❌ خطأ: ${error.message}</div>`;
+            }
+        }
+
+        async function showCurrentURL() {
+            try {
+                // محاكاة إنشاء OAuth URL
+                const response = await fetch('/auth/discord/login', { 
+                    method: 'GET',
+                    redirect: 'manual' // Don't follow redirect
+                });
+                
+                const location = response.headers.get('Location') || response.url;
+                document.getElementById('user-oauth-url').textContent = location;
+            } catch (error) {
+                document.getElementById('user-oauth-url').textContent = 'خطأ في جلب URL';
+            }
+        }
+
+        // Run tests on page load
+        window.onload = function() {
+            testAll();
+            showCurrentURL();
+        };
+    </script>
+</body>
+</html>

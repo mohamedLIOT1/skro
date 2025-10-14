@@ -1,0 +1,42 @@
+:root{
+  --bg:#0b0f1a;
+  --bg-alt:#10172b;
+  --text:#e9edf5;
+ footer>
+
+    <script>
+      // املأ القيم الخاصة بك هنا
+      const CONFIG = {
+        CLIENT_ID: "YOUR_CLIENT_ID",
+        PERMISSIONS: "YOUR_PERMISSIONS", // رقم الصلاحيات
+        SUPPORT_INVITE: "https:// --muted:#a8b3cf;
+  --primary:#8a5cf6;     /* بنفسجي قريب من ألوان الشعار */
+  --accent:#ffa600;      /* أصفر/برتقالي من الشdiscord.gg/YOUR_SUPPORT_SERVER",
+        TOPGG_URL: "https://top.gg/bot/YOUR_CLIENT_ID"
+      };
+
+      const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${CONFIG.CLIENT_ID}&permissions=${CONFIG.PERMISSIONS}&scope=bot%20applications.commands`;
+
+      document.getElementById('inviteTop').href = inviteUrl;
+      document.getعار */
+  --pink:#ff4d88;        /* درجـة وردي من الحواف */
+  --card:#121a2b;
+  --border:#1f2a44;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+a{color:var(--text);text-decoration:none}
+.container{width:min(1100px,92%);margin-inlineElementById('inviteMain').href = inviteUrl;
+      document.getElementById('supportBtn').href = CONFIG.SUPPORT_INVITE;
+      document.getElementById('topgg').href = CONFIG.TOPGG_URL;
+
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+  </:auto}
+
+.nav{
+  position:sticky;top:0;z-index:10;
+  background:rgba(11,15,26,.7);backdrop-filter:blur(8px);
+  border-bottom:body>
+</html>

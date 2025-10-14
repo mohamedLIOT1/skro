@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - بوت سكرو</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            direction: rtl;
+        }
+        .login-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #7289da, #5b6eae);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .discord-btn {
+            background: #7289da;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(114, 137, 218, 0.3);
+        }
+        .discord-btn:hover {
+            background: #5b6eae;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(114, 137, 218, 0.4);
+        }
+        .test-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+        }
+        .test-btn {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .status {
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">🎮</div>
+        <h1>بوت سكرو</h1>
+        <p>سجل دخول بحساب Discord عشان تشوف نقاطك وتدخل اللوحة الشخصية</p>
+        
+        <div id="status" class="status info">
+            جاري فحص حالة الاتصال...
+        </div>
+
+        <div id="login-section" style="display: none;">
+            <a href="/auth/discord/login" class="discord-btn">
+                🚀 تسجيل الدخول بـ Discord
+            </a>
+        </div>
+
+        <div id="user-section" style="display: none;">
+            <div class="status success">
+                ✅ تم تسجيل الدخول بنجاح!
+            </div>
+            <div id="user-info"></div>
+            <br>
+            <a href="/" class="discord-btn" style="background: #17a2b8;">
+                🏠 الذهاب للموقع الرئيسي
+            </a>
+            <br><br>
+            <a href="/auth/logout" class="test-btn" style="background: #dc3545;">
+                تسجيل الخروج
+            </a>
+        </div>
+
+        <div class="test-section">
+            <h3>اختبارات النظام</h3>
+            <button onclick="testServer()" class="test-btn">اختبار الخادم</button>
+            <button onclick="testAuth()" class="test-btn">اختبار المصادقة</button>
+            <button onclick="testAPI()" class="test-btn">اختبار APIs</button>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        function updateStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        async function testServer() {
+            try {
+                const response = await fetch('/health');
+                if (response.ok) {
+                    const data = await response.json();
+                    updateStatus('✅ الخادم يعمل بشكل طبيعي!', 'success');
+                } else {
+                    updateStatus('❌ خطأ في الخادم: ' + response.status, 'error');
+                }
+            } catch (error) {
+                updateStatus('❌ فشل الاتصال بالخادم: ' + error.message, 'error');
+            }
+        }
+
+        async function testAuth() {
+            try {
+                const response = await fetch('/api/auth/me');
+                const data = await response.json();
+                
+                if (data.authenticated) {
+                    currentUser = data.user;
+                    showUserSection();
+                    updateStatus('✅ المستخدم مسجل دخول: ' + data.user.username, 'success');
+                } else {
+                    showLoginSection();
+                    updateStatus('ℹ️ لم يتم تسجيل الدخول', 'info');
+                }
+            } catch (error) {
+                updateStatus('❌ خطأ في فحص المصادقة: ' + error.message, 'error');
+            }
+        }
+
+        async function testAPI() {
+            try {
+                const response = await fetch('/api/stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    updateStatus(`✅ API يعمل - عدد السيرفرات: ${data.guild_count}`, 'success');
+                } else {
+                    updateStatus('❌ خطأ في API: ' + response.status, 'error');
+                }
+            } catch (error) {
+                updateStatus('❌ فشل الاتصال بـ API: ' + error.message, 'error');
+            }
+        }
+
+        function showLoginSection() {
+            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('user-section').style.display = 'none';
+        }
+
+        function showUserSection() {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('user-section').style.display = 'block';
+            
+            if (currentUser) {
+                document.getElementById('user-info').innerHTML = `
+                    <h3>مرحباً ${currentUser.username}!</h3>
+                    <p><strong>الاسم:</strong> ${currentUser.global_name || 'غير محدد'}</p>
+                    <p><strong>ID:</strong> ${currentUser.id}</p>
+                `;
+            }
+        }
+
+        // تشغيل الاختبارات عند تحميل الصفحة
+        window.onload = async function() {
+            await testServer();
+            await testAuth();
+        };
+    </script>
+</body>
+</html>

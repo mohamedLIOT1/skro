@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الترحيب المميز - بوت سكرو</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+            direction: rtl;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .btn {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .preview-frame {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="test-section">
+            <h1>🎮 اختبار أشكال الترحيب المختلفة</h1>
+            <p>جرب الأشكال المختلفة للترحيب حسب نوع العضوية:</p>
+            
+            <button class="btn btn-primary" onclick="showOwnerWelcome()">👑 ترحيب المطور</button>
+            <button class="btn btn-primary" onclick="showVipDiamondWelcome()">💎 ترحيب VIP Diamond</button>
+            <button class="btn btn-primary" onclick="showVipGoldWelcome()">🥇 ترحيب VIP Gold</button>
+            <button class="btn btn-secondary" onclick="showNormalWelcome()">👤 ترحيب عادي</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>معاينة الترحيب:</h3>
+            <div id="welcome-preview" class="preview-frame">
+                <div style="text-align: center; color: white;">
+                    اضغط على أحد الأزرار لمعاينة الترحيب
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔧 اختبار APIs:</h3>
+            <button class="btn btn-secondary" onclick="testOwnerAPI()">اختبار Owner API</button>
+            <button class="btn btn-secondary" onclick="testVipAPI()">اختبار VIP API</button>
+            <div id="api-results" style="margin-top: 15px; font-family: monospace; background: #f8f9fa; padding: 10px; border-radius: 5px;">
+                نتائج الاختبار ستظهر هنا...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showOwnerWelcome() {
+            const preview = document.getElementById('welcome-preview');
+            preview.innerHTML = `
+                <div class="container">
+                    <div class="welcome-content" style="text-align: center;">
+                        <div class="user-avatar" style="margin: 0 auto 20px; position: relative;">
+                            <img src="https://cdn.discordapp.com/embed/avatars/1.png" alt="صورة المستخدم" 
+                                 style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--primary); box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);">
+                            <div class="crown-badge" style="position: absolute; top: -10px; right: -10px; background: gold; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);">👑</div>
+                        </div>
+                        
+                        <div class="special-title" style="color: gold; font-weight: bold; margin-bottom: 10px; font-size: 1.1rem;">👑 المطور الأساسي</div>
+                        
+                        <h2 class="welcome-title" style="font-size: 2rem; color: white; margin-bottom: 10px;">
+                            أهلاً وسهلاً بك يا المطور! شرف كبير وجودك هنا 🌟
+                        </h2>
+                        
+                        <div class="vip-stats" style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin: 20px 0; backdrop-filter: blur(5px);">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; text-align: center;">
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: bold; color: #fff;">∞</div>
+                                    <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">النقاط</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: bold; color: #fff;">∞</div>
+                                    <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">الانتصارات</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: bold; color: #fff;">∞</div>
+                                    <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">الكريدتس</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p style="color: rgba(255,255,255,0.9); font-size: 1.1rem; margin-bottom: 30px;">
+                            شكراً لدعمك المستمر للبوت! 💜
+                        </p>
+                    </div>
+                </div>
+            `;
+            preview.style.cssText = `
+                background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 193, 7, 0.1) 100%);
+                border: 2px solid gold;
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+                padding: 40px 20px;
+                border-radius: 10px;
+                margin: 20px 0;
+            `;
+        }
+
+        function showVipDiamondWelcome() {
+            const preview = document.getElementById('welcome-preview');
+            preview.innerHTML = `
+                <div class="container">
+                    <div class="welcome-content" style="text-align: center;">
+                        <div class="user-avatar" style="margin: 0 auto 20px; position: relative;">
+                            <img src="https://cdn.discordapp.com/embed/avatars/2.png" alt="صورة المستخدم" 
+                                 style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--primary); box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);">
+                            <div class="crown-badge" style="position: absolute; top: -10px; right: -10px; background: linear-gradient(45deg, #00bfff, #87ceeb); border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 15px rgba(0, 191, 255, 0.4);">💎</div>
+                        </div>
+                        
+                        <div class="special-title" style="color: #00bfff; font-weight: bold; margin-bottom: 10px; font-size: 1.1rem;">💎 عضو ماسي</div>
+                        
+                        <h2 class="welcome-title" style="font-size: 2rem; color: white; margin-bottom: 10px;">
+                            مرحباً بعضو الـ VIP Diamond، المستخدم! مرحباً بالعضو الماسي المميز!
+                        </h2>
+                        
+                        <div class="vip-stats" style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin: 20px 0; backdrop-filter: blur(5px);">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; text-align: center;">
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: bold; color: #fff;">1,250</div>
+                                    <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">النقاط</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: bold; color: #fff;">45</div>
+                                    <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">الانتصارات</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: bold; color: #fff;">125.0</div>
+                                    <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">الكريدتس</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p style="color: rgba(255,255,255,0.9); font-size: 1.1rem; margin-bottom: 30px;">
+                            شكراً لدعمك المستمر للبوت! 💜
+                        </p>
+                    </div>
+                </div>
+            `;
+            preview.style.cssText = `
+                background: linear-gradient(135deg, rgba(185, 242, 255, 0.15) 0%, rgba(0, 191, 255, 0.1) 100%);
+                border: 2px solid #00bfff;
+                box-shadow: 0 0 25px rgba(0, 191, 255, 0.3);
+                padding: 40px 20px;
+                border-radius: 10px;
+                margin: 20px 0;
+            `;
+        }
+
+        function showVipGoldWelcome() {
+            const preview = document.getElementById('welcome-preview');
+            preview.innerHTML = `
+                <div class="container">
+                    <div class="welcome-content" style="text-align: center;">
+                        <div class="user-avatar" style="margin: 0 auto 20px; position: relative;">
+                            <img src="https://cdn.discordapp.com/embed/avatars/3.png" alt="صورة المستخدم" 
+                                 style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--primary); box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);">
+                            <div class="crown-badge" style="position: absolute; top: -10px; right: -10px; background: linear-gradient(45deg, #ffd700, #ffed4e); border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);">🥇</div>
+                        </div>
+                        
+                        <div class="special-title" style="color: #ffd700; font-weight: bold; margin-bottom: 10px; font-size: 1.1rem;">🥇 عضو ذهبي</div>
+                        
+                        <h2 class="welcome-title" style="font-size: 2rem; color: white; margin-bottom: 10px;">
+                            مرحباً بعضو الـ VIP Gold، المستخدم! مرحباً بالعضو الذهبي الكريم!
+                        </h2>
+                        
+                        <p style="color: rgba(255,255,255,0.9); font-size: 1.1rem; margin-bottom: 30px;">
+                            شكراً لدعمك المستمر للبوت! 💜
+                        </p>
+                    </div>
+                </div>
+            `;
+            preview.style.cssText = `
+                background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 193, 7, 0.1) 100%);
+                border: 2px solid #ffd700;
+                box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+                padding: 40px 20px;
+                border-radius: 10px;
+                margin: 20px 0;
+            `;
+        }
+
+        function showNormalWelcome() {
+            const preview = document.getElementById('welcome-preview');
+            preview.innerHTML = `
+                <div class="container">
+                    <div class="welcome-content" style="text-align: center;">
+                        <div class="user-avatar" style="margin: 0 auto 20px;">
+                            <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="صورة المستخدم" 
+                                 style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--primary); box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);">
+                        </div>
+                        
+                        <h2 class="welcome-title" style="font-size: 2rem; color: white; margin-bottom: 10px;">
+                            مرحباً، المستخدم! 👋
+                        </h2>
+                        
+                        <p style="color: rgba(255,255,255,0.9); font-size: 1.1rem; margin-bottom: 30px;">
+                            نورت الموقع! تقدر دلوقتي تشوف كل إحصائياتك في لوحة التحكم
+                        </p>
+                    </div>
+                </div>
+            `;
+            preview.style.cssText = `
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 40px 20px;
+                border-radius: 10px;
+                margin: 20px 0;
+            `;
+        }
+
+        async function testOwnerAPI() {
+            const results = document.getElementById('api-results');
+            results.innerHTML = 'جاري اختبار Owner API...';
+            
+            try {
+                const response = await fetch('/api/owner-check/1005358700237692989');
+                const data = await response.json();
+                results.innerHTML = `
+                    <strong>Owner API Test:</strong><br>
+                    User ID: ${data.user_id}<br>
+                    Is Owner: ${data.is_owner ? '✅ نعم' : '❌ لا'}<br>
+                    Status: ${response.ok ? '✅ Success' : '❌ Failed'}
+                `;
+            } catch (error) {
+                results.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        async function testVipAPI() {
+            const results = document.getElementById('api-results');
+            results.innerHTML = 'جاري اختبار VIP API...';
+            
+            try {
+                const response = await fetch('/api/user/1064878296480895006/points');
+                const data = await response.json();
+                results.innerHTML = `
+                    <strong>VIP API Test:</strong><br>
+                    User ID: ${data.user_id}<br>
+                    VIP Tier: ${data.vip_tier || 'لا يوجد'}<br>
+                    Points: ${data.stats.points}<br>
+                    Credits: ${data.stats.credits}<br>
+                    Status: ${response.ok ? '✅ Success' : '❌ Failed'}
+                `;
+            } catch (error) {
+                results.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        // Auto-load normal welcome on page load
+        window.onload = () => showNormalWelcome();
+    </script>
+</body>
+</html>

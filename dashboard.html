@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - بوت سكرو</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            direction: rtl;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: #667eea;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 1px solid white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* User Profile Card */
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #667eea;
+            object-fit: cover;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .profile-info h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .profile-info p {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-badges {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .badge-vip {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #333;
+        }
+
+        .badge-premium {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .badge-member {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .icon-points { background: linear-gradient(45deg, #4CAF50, #8BC34A); }
+        .icon-wins { background: linear-gradient(45deg, #FF9800, #FFC107); }
+        .icon-games { background: linear-gradient(45deg, #2196F3, #03DAC6); }
+        .icon-credits { background: linear-gradient(45deg, #9C27B0, #E91E63); }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-change.positive { color: #4CAF50; }
+        .stat-change.neutral { color: #666; }
+
+        /* Progress Bars */
+        .progress-section {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .progress-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.8s ease;
+        }
+
+        /* Action Cards */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .action-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .action-desc {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .action-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Loading States */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .profile-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-value {
+                font-size: 2rem;
+            }
+        }
+
+        /* Error States */
+        .error-card {
+            background: #fff5f5;
+            border: 1px solid #fed7d7;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            color: #c53030;
+        }
+
+        .error-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            🎮 بوت سكرو - لوحة التحكم
+        </div>
+        <div class="nav-buttons">
+            <a href="/" class="btn btn-outline">الصفحة الرئيسية</a>
+            <a href="/auth/logout" class="btn btn-primary" id="logout-btn" style="display: none;">تسجيل الخروج</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Loading State -->
+        <div id="loading-state" class="loading">
+            جاري تحميل بياناتك<div class="spinner"></div>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="error-card" style="display: none;">
+            <div class="error-icon">⚠️</div>
+            <h2>خطأ في تحميل البيانات</h2>
+            <p>يرجى التأكد من تسجيل الدخول أولاً</p>
+            <br>
+            <a href="/auth/discord/login" class="btn btn-primary">تسجيل الدخول</a>
+        </div>
+
+        <!-- User Profile Card -->
+        <div id="profile-section" style="display: none;">
+            <div class="profile-card">
+                <img id="user-avatar" src="" alt="صورة المستخدم" class="profile-avatar">
+                <div class="profile-info">
+                    <h1 id="user-name">اسم المستخدم</h1>
+                    <p id="user-id">المعرف: #0000</p>
+                    <p id="join-date">تاريخ الانضمام: غير محدد</p>
+                    <div class="profile-badges" id="user-badges">
+                        <!-- الشارات ستتم إضافتها ديناميكياً -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">إجمالي النقاط</span>
+                        <div class="stat-icon icon-points">🏆</div>
+                    </div>
+                    <div class="stat-value" id="total-points">0</div>
+                    <div class="stat-change positive" id="points-change">
+                        <span>↗️ +0 هذا الأسبوع</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">الانتصارات</span>
+                        <div class="stat-icon icon-wins">🥇</div>
+                    </div>
+                    <div class="stat-value" id="total-wins">0</div>
+                    <div class="stat-change neutral" id="wins-ratio">
+                        <span>معدل الفوز: 0%</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">إجمالي الألعاب</span>
+                        <div class="stat-icon icon-games">🎯</div>
+                    </div>
+                    <div class="stat-value" id="total-games">0</div>
+                    <div class="stat-change neutral" id="best-score">
+                        <span>أفضل نتيجة: 0</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">الكريدتس</span>
+                        <div class="stat-icon icon-credits">💎</div>
+                    </div>
+                    <div class="stat-value" id="total-credits">0.0</div>
+                    <div class="stat-change neutral" id="credits-rate">
+                        <span>معدل التحويل: 10 نقاط = 1 كريدت</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Section -->
+            <div class="progress-section">
+                <h3 style="margin-bottom: 1.5rem; color: #333;">التقدم والإنجازات</h3>
+                
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span>التقدم نحو العضوية المميزة</span>
+                        <span id="premium-progress-text">0 / 500 نقطة</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="premium-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span>كريدتس للترخيص البريميوم</span>
+                        <span id="license-progress-text">0 / 50 كريدت</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="license-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions Grid -->
+            <div class="actions-grid">
+                <div class="action-card">
+                    <div class="action-icon">🎫</div>
+                    <div class="action-title">شراء الترخيص البريميوم</div>
+                    <div class="action-desc">احصل على أوامر خاصة ومميزات إضافية</div>
+                    <button class="action-btn" id="buy-premium-btn" onclick="purchaseLicense()">
+                        شراء مقابل 50 كريدت
+                    </button>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon">🤝</div>
+                    <div class="action-title">دعوة الأصدقاء</div>
+                    <div class="action-desc">ادع أصدقاءك واحصل على نقاط إضافية</div>
+                    <button class="action-btn" onclick="showReferralCode()">
+                        إنشاء رابط دعوة
+                    </button>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon">📊</div>
+                    <div class="action-title">الإحصائيات المفصلة</div>
+                    <div class="action-desc">شاهد تقارير مفصلة عن أدائك</div>
+                    <button class="action-btn" onclick="showDetailedStats()">
+                        عرض التقرير
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userData = null;
+        let userStats = null;
+
+        async function loadDashboard() {
+            try {
+                showLoading();
+
+                // Check if user is authenticated
+                const authResponse = await fetch('/api/auth/me');
+                const authData = await authResponse.json();
+
+                if (!authData.authenticated) {
+                    showError();
+                    return;
+                }
+
+                userData = authData.user;
+
+                // Load user stats
+                const statsResponse = await fetch(`/api/user/${userData.id}/points`);
+                if (statsResponse.ok) {
+                    const statsData = await statsResponse.json();
+                    userStats = statsData.stats;
+                    
+                    // Check VIP status
+                    const vipTier = statsData.vip_tier;
+                    
+                    displayUserData(userData, userStats, vipTier);
+                    showDashboard();
+                } else {
+                    throw new Error('Failed to load user stats');
+                }
+
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showError();
+            }
+        }
+
+        function displayUserData(user, stats, vipTier) {
+            // User profile
+            document.getElementById('user-name').textContent = user.global_name || user.username;
+            document.getElementById('user-id').textContent = `المعرف: #${user.id}`;
+            
+            // Avatar
+            const avatarUrl = user.avatar 
+                ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`
+                : `https://cdn.discordapp.com/embed/avatars/${user.id % 5}.png`;
+            document.getElementById('user-avatar').src = avatarUrl;
+
+            // Stats
+            document.getElementById('total-points').textContent = stats.points.toLocaleString();
+            document.getElementById('total-wins').textContent = stats.wins.toLocaleString();
+            document.getElementById('total-games').textContent = stats.games.toLocaleString();
+            document.getElementById('total-credits').textContent = stats.credits.toFixed(2);
+
+            // Win ratio
+            const winRatio = stats.games > 0 ? ((stats.wins / stats.games) * 100).toFixed(1) : 0;
+            document.getElementById('wins-ratio').innerHTML = `<span>معدل الفوز: ${winRatio}%</span>`;
+            
+            // Best score
+            document.getElementById('best-score').innerHTML = `<span>أفضل نتيجة: ${stats.best.toLocaleString()}</span>`;
+
+            // Badges
+            const badgesContainer = document.getElementById('user-badges');
+            badgesContainer.innerHTML = '';
+            
+            if (vipTier) {
+                const vipBadge = document.createElement('span');
+                vipBadge.className = 'badge badge-vip';
+                vipBadge.textContent = `VIP ${vipTier}`;
+                badgesContainer.appendChild(vipBadge);
+            }
+
+            if (stats.credits >= 50) {
+                const premiumBadge = document.createElement('span');
+                premiumBadge.className = 'badge badge-premium';
+                premiumBadge.textContent = 'عضو بريميوم';
+                badgesContainer.appendChild(premiumBadge);
+            }
+
+            const memberBadge = document.createElement('span');
+            memberBadge.className = 'badge badge-member';
+            memberBadge.textContent = 'عضو نشط';
+            badgesContainer.appendChild(memberBadge);
+
+            // Progress bars
+            updateProgressBars(stats);
+
+            // Show logout button
+            document.getElementById('logout-btn').style.display = 'inline-block';
+        }
+
+        function updateProgressBars(stats) {
+            // Premium progress (towards 500 points)
+            const premiumTarget = 500;
+            const premiumProgress = Math.min((stats.points / premiumTarget) * 100, 100);
+            document.getElementById('premium-progress').style.width = premiumProgress + '%';
+            document.getElementById('premium-progress-text').textContent = `${stats.points} / ${premiumTarget} نقطة`;
+
+            // License progress (towards 50 credits)
+            const licenseTarget = 50;
+            const licenseProgress = Math.min((stats.credits / licenseTarget) * 100, 100);
+            document.getElementById('license-progress').style.width = licenseProgress + '%';
+            document.getElementById('license-progress-text').textContent = `${stats.credits.toFixed(1)} / ${licenseTarget} كريدت`;
+
+            // Update purchase button
+            const buyBtn = document.getElementById('buy-premium-btn');
+            if (stats.credits >= 50) {
+                buyBtn.textContent = 'مفعل ✓';
+                buyBtn.disabled = true;
+                buyBtn.style.background = '#28a745';
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loading-state').style.display = 'flex';
+            document.getElementById('error-state').style.display = 'none';
+            document.getElementById('profile-section').style.display = 'none';
+        }
+
+        function showError() {
+            document.getElementById('loading-state').style.display = 'none';
+            document.getElementById('error-state').style.display = 'block';
+            document.getElementById('profile-section').style.display = 'none';
+        }
+
+        function showDashboard() {
+            document.getElementById('loading-state').style.display = 'none';
+            document.getElementById('error-state').style.display = 'none';
+            document.getElementById('profile-section').style.display = 'block';
+        }
+
+        async function purchaseLicense() {
+            if (!userData || !userStats) return;
+
+            if (userStats.credits < 50) {
+                alert('رصيد غير كافي! تحتاج إلى 50 كريدت على الأقل.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/user/${userData.id}/purchase`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product: 'premium_license' })
+                });
+
+                const result = await response.json();
+                
+                if (result.ok) {
+                    alert('تم شراء الترخيص البريميوم بنجاح! 🎉');
+                    // Reload dashboard to update stats
+                    loadDashboard();
+                } else {
+                    alert('خطأ: ' + result.error);
+                }
+            } catch (error) {
+                alert('خطأ في الشراء: ' + error.message);
+            }
+        }
+
+        function showReferralCode() {
+            if (!userData) return;
+            
+            const referralCode = `سكرووو_صاحب_صحبو ${userData.id}`;
+            alert(`كود الإحالة الخاص بك:\n${referralCode}\n\nشارك هذا الكود مع أصدقائك!`);
+        }
+
+        function showDetailedStats() {
+            if (!userStats) return;
+
+            const details = `
+📊 إحصائياتك المفصلة:
+
+🏆 إجمالي النقاط: ${userStats.points.toLocaleString()}
+🥇 الانتصارات: ${userStats.wins.toLocaleString()}
+🎯 إجمالي الألعاب: ${userStats.games.toLocaleString()}
+📈 أفضل نتيجة: ${userStats.best.toLocaleString()}
+📊 المتوسط: ${userStats.average.toFixed(2)}
+💎 الكريدتس: ${userStats.credits.toFixed(2)}
+
+📈 معدل الفوز: ${userStats.games > 0 ? ((userStats.wins / userStats.games) * 100).toFixed(1) : 0}%
+🎮 متوسط النقاط لكل لعبة: ${userStats.games > 0 ? (userStats.points / userStats.games).toFixed(1) : 0}
+            `;
+            
+            alert(details);
+        }
+
+        // Load dashboard when page loads
+        window.onload = loadDashboard;
+    </script>
+</body>
+</html>

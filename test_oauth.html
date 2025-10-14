@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار OAuth - بوت سكرو</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            direction: rtl;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+        }
+        .btn {
+            background: #7289da;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: #5b6eae;
+            transform: translateY(-2px);
+        }
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🎮 اختبار تسجيل الدخول - بوت سكرو</h2>
+        <div id="auth-status" class="status"></div>
+        
+        <div id="login-section">
+            <p>اضغط للتسجيل عبر Discord:</p>
+            <a href="/auth/discord/login" class="btn">🚀 تسجيل الدخول</a>
+        </div>
+        
+        <div id="user-info" style="display: none;">
+            <h3>مرحباً!</h3>
+            <div id="user-details"></div>
+            <a href="/auth/logout" class="btn">تسجيل الخروج</a>
+        </div>
+        
+        <hr style="margin: 20px 0;">
+        <div>
+            <button onclick="testAPI()" class="btn">اختبر API</button>
+            <button onclick="checkAuth()" class="btn">تحقق من الحالة</button>
+        </div>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'success') {
+            const status = document.getElementById('auth-status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/me');
+                const data = await response.json();
+                
+                if (data.authenticated) {
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('user-info').style.display = 'block';
+                    document.getElementById('user-details').innerHTML = `
+                        <p><strong>المستخدم:</strong> ${data.user.username}</p>
+                        <p><strong>الاسم:</strong> ${data.user.global_name || 'غير محدد'}</p>
+                        <p><strong>ID:</strong> ${data.user.id}</p>
+                    `;
+                    showStatus('تم تسجيل الدخول بنجاح! ✅');
+                } else {
+                    document.getElementById('login-section').style.display = 'block';
+                    document.getElementById('user-info').style.display = 'none';
+                    showStatus('لم يتم تسجيل الدخول', 'error');
+                }
+            } catch (error) {
+                showStatus('خطأ في التحقق من الحالة: ' + error.message, 'error');
+            }
+        }
+
+        async function testAPI() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                showStatus('API يعمل بشكل طبيعي! ✅ الوقت: ' + new Date(data.time * 1000).toLocaleString());
+            } catch (error) {
+                showStatus('خطأ في الاتصال بالـ API: ' + error.message, 'error');
+            }
+        }
+
+        // تشغيل فحص الحالة عند تحميل الصفحة
+        window.onload = checkAuth;
+    </script>
+</body>
+</html>
