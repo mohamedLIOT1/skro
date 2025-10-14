@@ -12,14 +12,24 @@ from datetime import timedelta
 load_dotenv()  # Load .env if exists
 
 
+
 app = Flask(__name__)
 app.secret_key = os.getenv('WEB_SECRET_KEY', 'dev-secret-change')
 app.permanent_session_lifetime = timedelta(days=7)
 # --- Cookie settings for custom domain/HTTPS ---
 app.config.update(
     SESSION_COOKIE_SAMESITE="None",
-    SESSION_COOKIE_SECURE=True
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_DOMAIN='.skrew.ct.ws'
 )
+
+# Custom session interface to ensure cookies are saved
+from flask.sessions import SecureCookieSessionInterface
+class CustomSessionInterface(SecureCookieSessionInterface):
+    def save_session(self, *args, **kwargs):
+        if getattr(session, 'modified', False):
+            super().save_session(*args, **kwargs)
+app.session_interface = CustomSessionInterface()
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s: %(message)s')
 
