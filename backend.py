@@ -11,9 +11,15 @@ from datetime import timedelta
 
 load_dotenv()  # Load .env if exists
 
+
 app = Flask(__name__)
 app.secret_key = os.getenv('WEB_SECRET_KEY', 'dev-secret-change')
 app.permanent_session_lifetime = timedelta(days=7)
+# --- Cookie settings for custom domain/HTTPS ---
+app.config.update(
+    SESSION_COOKIE_SAMESITE="None",
+    SESSION_COOKIE_SECURE=True
+)
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s: %(message)s')
 
