@@ -14,22 +14,18 @@ load_dotenv()  # Load .env if exists
 
 
 app = Flask(__name__)
-app.secret_key = os.getenv('WEB_SECRET_KEY', 'dev-secret-change')
+# Use SECRET_KEY from environment (important for Railway deployment)
+app.secret_key = os.getenv('SECRET_KEY') or os.getenv('WEB_SECRET_KEY', 'dev-secret-change-in-production')
 app.permanent_session_lifetime = timedelta(days=7)
-# --- Cookie settings for custom domain/HTTPS ---
-app.config.update(
-    SESSION_COOKIE_SAMESITE="None",
-    SESSION_COOKIE_SECURE=True,
-    SESSION_COOKIE_DOMAIN='.skrew.ct.ws'
-)
 
-# Custom session interface to ensure cookies are saved
-from flask.sessions import SecureCookieSessionInterface
-class CustomSessionInterface(SecureCookieSessionInterface):
-    def save_session(self, *args, **kwargs):
-        if getattr(session, 'modified', False):
-            super().save_session(*args, **kwargs)
-app.session_interface = CustomSessionInterface()
+# --- Cookie settings for custom domain/HTTPS ---
+# Note: SESSION_COOKIE_DOMAIN should match your domain or be None for flexibility
+app.config.update(
+    SESSION_COOKIE_SAMESITE="Lax",  # Changed from "None" to "Lax" for better compatibility
+    SESSION_COOKIE_SECURE=True,     # Required for HTTPS
+    SESSION_COOKIE_HTTPONLY=True,   # Security: prevent JS access to cookies
+    SESSION_COOKIE_DOMAIN=None      # Let Flask handle domain automatically
+)
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s: %(message)s')
 
@@ -174,7 +170,9 @@ def discord_login():
     if not DISCORD_CLIENT_ID:
         return 'خادم غير مهيأ (اضبط env DISCORD_CLIENT_ID)', 500
     state = secrets.token_hex(16)
+    session.permanent = True
     session['oauth_state'] = state
+    session.modified = True
     params = {
         'client_id': DISCORD_CLIENT_ID,
         'response_type': 'code',
@@ -217,6 +215,8 @@ def discord_callback():
         return 'فشل جلب المستخدم', 400
     user = user_resp.json()
     # Store minimal user info in session
+    # Store user info in session and mark it as permanent
+    session.permanent = True
     session['user'] = {
         'id': user.get('id'),
         'username': user.get('username'),
@@ -224,7 +224,10 @@ def discord_callback():
         'avatar': user.get('avatar')
     }
     session['access_token'] = access_token
-    return redirect('/')
+    session.modified = True  # Force session to save
+    
+    # Redirect to dashboard after successful login
+    return redirect('/dashboard')
 
 @app.route('/auth/logout')
 def auth_logout():
