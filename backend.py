@@ -361,6 +361,10 @@ def api_leaderboard():
                     except Exception as ex:
                         logging.error(f"Error fetching Discord avatar for {user_id}: {ex}")
                         avatar_url = "https://cdn.discordapp.com/embed/avatars/0.png?size=256"
+                # تأكد أن avatar_url ليس None أبداً
+                if not avatar_url:
+                    avatar_url = "https://cdn.discordapp.com/embed/avatars/0.png?size=256"
+                logging.info(f"Leaderboard user: {username} | avatar_url: {avatar_url}")
                 all_players.append({
                     'user_id': user_id,
                     'username': username,

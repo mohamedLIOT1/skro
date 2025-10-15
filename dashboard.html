@@ -1492,9 +1492,7 @@
                 const rank = index + 1;
                 const rankClass = rank <= 3 ? `rank-${rank}` : '';
                 
-                const avatarUrl = player.avatar 
-                    ? `https://cdn.discordapp.com/avatars/${player.user_id}/${player.avatar}.png?size=128`
-                    : `https://cdn.discordapp.com/embed/avatars/${player.user_id % 5}.png`;
+                const avatarUrl = player.avatar;
 
                 const value = player[type];
                 const subtitle = type === 'points' ? `${player.wins} فوز · ${player.games} لعبة` :
