@@ -307,12 +307,31 @@ def api_leaderboard():
                 # Prefer global_name, then username, fallback to user_id
                 username = user_info.get('username') or f'User {user_id}'
                 avatar = user_info.get('avatar')
+                avatar_url = None
                 # Check for valid avatar (not None, not empty, not 'None', not 'null')
                 if avatar and str(avatar).lower() not in ['none', 'null', '']:
                     avatar_url = f"https://cdn.discordapp.com/avatars/{user_id}/{avatar}.png?size=128"
                 else:
+                    # Try to fetch from Discord API if not found
                     try:
-                        avatar_url = f"https://cdn.discordapp.com/embed/avatars/{int(user_id) % 5}.png"
+                        discord_user = None
+                        discord_api_url = f"https://discord.com/api/users/{user_id}"
+                        headers = {}
+                        bot_token = os.environ.get('DISCORD_BOT_TOKEN')
+                        if bot_token:
+                            headers['Authorization'] = f'Bot {bot_token}'
+                        resp = requests.get(discord_api_url, headers=headers, timeout=2)
+                        if resp.status_code == 200:
+                            discord_user = resp.json()
+                            avatar = discord_user.get('avatar')
+                            if avatar:
+                                avatar_url = f"https://cdn.discordapp.com/avatars/{user_id}/{avatar}.png?size=128"
+                                # Update users.json for next time
+                                user_info['avatar'] = avatar
+                                users_data[user_id] = user_info
+                                save_json(USERS_FILE, users_data)
+                        if not avatar_url:
+                            avatar_url = f"https://cdn.discordapp.com/embed/avatars/{int(user_id) % 5}.png"
                     except Exception:
                         avatar_url = "https://cdn.discordapp.com/embed/avatars/0.png"
                 all_players.append({
