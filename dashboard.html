@@ -501,19 +501,156 @@
         @media (max-width: 768px) {
             .container {
                 padding: 0 1rem;
+                margin: 1rem auto;
+            }
+
+            .header {
+                padding: 1rem;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .nav-buttons {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .btn {
+                padding: 6px 12px;
+                font-size: 12px;
             }
             
             .profile-card {
                 flex-direction: column;
                 text-align: center;
+                padding: 1.5rem;
+            }
+
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+            }
+
+            .profile-info h1 {
+                font-size: 1.5rem;
+            }
+
+            .profile-badges {
+                justify-content: center;
             }
             
             .stats-grid {
                 grid-template-columns: 1fr;
+                gap: 1rem;
             }
             
             .stat-value {
                 font-size: 2rem;
+            }
+
+            .stat-card {
+                padding: 1.2rem;
+            }
+
+            .progress-section {
+                padding: 1.2rem;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .action-card {
+                padding: 1.2rem;
+            }
+
+            .night-mode-toggle {
+                width: 45px;
+                height: 24px;
+            }
+
+            .night-mode-toggle .toggle-slider {
+                width: 18px;
+                height: 18px;
+                font-size: 10px;
+            }
+
+            .night-mode-toggle.active .toggle-slider {
+                transform: translateX(21px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 0.8rem;
+            }
+
+            .logo {
+                font-size: 1rem;
+            }
+
+            .profile-card {
+                padding: 1rem;
+            }
+
+            .profile-avatar {
+                width: 80px;
+                height: 80px;
+            }
+
+            .profile-info h1 {
+                font-size: 1.3rem;
+            }
+
+            .profile-info p {
+                font-size: 0.85rem;
+            }
+
+            .badge {
+                font-size: 10px;
+                padding: 3px 8px;
+            }
+
+            .stat-value {
+                font-size: 1.8rem;
+            }
+
+            .stat-title {
+                font-size: 0.8rem;
+            }
+
+            .stat-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+
+            .progress-section h3 {
+                font-size: 1rem;
+            }
+
+            .action-title {
+                font-size: 1rem;
+            }
+
+            .action-desc {
+                font-size: 0.9rem;
+            }
+
+            .action-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+
+            .action-btn {
+                padding: 8px 16px;
+                font-size: 0.9rem;
             }
         }
 
@@ -530,6 +667,306 @@
         .error-icon {
             font-size: 3rem;
             margin-bottom: 1rem;
+        }
+
+        /* Leaderboard Styles */
+        .leaderboard-section {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .leaderboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .leaderboard-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .leaderboard-tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: #f5f5f5;
+            padding: 0.3rem;
+            border-radius: 10px;
+        }
+
+        .leaderboard-tab {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-tab.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .leaderboard-tab:hover:not(.active) {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .leaderboard-item:hover {
+            background: #f0f0f0;
+            transform: translateX(-5px);
+        }
+
+        .leaderboard-item.rank-1 {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            border-color: #ffd700;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .leaderboard-item.rank-2 {
+            background: linear-gradient(135deg, #c0c0c0 0%, #d3d3d3 100%);
+            border-color: #c0c0c0;
+        }
+
+        .leaderboard-item.rank-3 {
+            background: linear-gradient(135deg, #cd7f32 0%, #e6a157 100%);
+            border-color: #cd7f32;
+        }
+
+        .leaderboard-rank {
+            font-size: 1.5rem;
+            font-weight: bold;
+            min-width: 50px;
+            text-align: center;
+            color: #333;
+        }
+
+        .leaderboard-item.rank-1 .leaderboard-rank::before {
+            content: '👑 ';
+        }
+
+        .leaderboard-item.rank-2 .leaderboard-rank::before {
+            content: '🥈 ';
+        }
+
+        .leaderboard-item.rank-3 .leaderboard-rank::before {
+            content: '🥉 ';
+        }
+
+        .leaderboard-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .leaderboard-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .leaderboard-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .leaderboard-item.rank-1 .leaderboard-name,
+        .leaderboard-item.rank-2 .leaderboard-name,
+        .leaderboard-item.rank-3 .leaderboard-name {
+            font-weight: 700;
+        }
+
+        .leaderboard-subtitle {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .leaderboard-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #667eea;
+            min-width: 80px;
+            text-align: left;
+        }
+
+        .leaderboard-item.rank-1 .leaderboard-value {
+            color: #b8860b;
+        }
+
+        .leaderboard-item.rank-2 .leaderboard-value {
+            color: #696969;
+        }
+
+        .leaderboard-item.rank-3 .leaderboard-value {
+            color: #8b4513;
+        }
+
+        .leaderboard-empty {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+        }
+
+        /* Night Mode for Leaderboard */
+        body.night-mode .leaderboard-section {
+            background: rgba(36, 36, 62, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.night-mode .leaderboard-title {
+            color: #e8e8e8;
+        }
+
+        body.night-mode .leaderboard-tabs {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        body.night-mode .leaderboard-tab {
+            color: #b3b3b3;
+        }
+
+        body.night-mode .leaderboard-tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+        }
+
+        body.night-mode .leaderboard-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body.night-mode .leaderboard-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        body.night-mode .leaderboard-name {
+            color: #e8e8e8;
+        }
+
+        body.night-mode .leaderboard-subtitle {
+            color: #b3b3b3;
+        }
+
+        body.night-mode .leaderboard-rank {
+            color: #e8e8e8;
+        }
+
+        /* Responsive Leaderboard */
+        @media (max-width: 768px) {
+            .leaderboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .leaderboard-tabs {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .leaderboard-tab {
+                flex: 1;
+                padding: 0.5rem 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            .leaderboard-item {
+                padding: 0.8rem;
+            }
+
+            .leaderboard-rank {
+                font-size: 1.2rem;
+                min-width: 40px;
+            }
+
+            .leaderboard-avatar {
+                width: 40px;
+                height: 40px;
+            }
+
+            .leaderboard-name {
+                font-size: 0.9rem;
+            }
+
+            .leaderboard-value {
+                font-size: 1.1rem;
+                min-width: 60px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .leaderboard-section {
+                padding: 1rem;
+            }
+
+            .leaderboard-title {
+                font-size: 1.2rem;
+            }
+
+            .leaderboard-tab {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.3rem;
+            }
+
+            .leaderboard-rank {
+                font-size: 1rem;
+                min-width: 35px;
+            }
+
+            .leaderboard-avatar {
+                width: 35px;
+                height: 35px;
+            }
+
+            .leaderboard-name {
+                font-size: 0.85rem;
+            }
+
+            .leaderboard-subtitle {
+                font-size: 0.75rem;
+            }
+
+            .leaderboard-value {
+                font-size: 1rem;
+                min-width: 50px;
+            }
         }
     </style>
 </head>
@@ -648,6 +1085,33 @@
                     </div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="license-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leaderboard Section -->
+            <div class="leaderboard-section">
+                <div class="leaderboard-header">
+                    <h3 class="leaderboard-title">
+                        🏆 لوحة المتصدرين
+                    </h3>
+                    <div class="leaderboard-tabs">
+                        <button class="leaderboard-tab active" onclick="switchLeaderboard('points')" id="tab-points">
+                            أعلى نقاط
+                        </button>
+                        <button class="leaderboard-tab" onclick="switchLeaderboard('wins')" id="tab-wins">
+                            أعلى انتصارات
+                        </button>
+                        <button class="leaderboard-tab" onclick="switchLeaderboard('games')" id="tab-games">
+                            أكثر ألعاب
+                        </button>
+                    </div>
+                </div>
+
+                <div class="leaderboard-list" id="leaderboard-list">
+                    <!-- Leaderboard items will be populated by JavaScript -->
+                    <div class="leaderboard-empty">
+                        جاري تحميل البيانات...
                     </div>
                 </div>
             </div>
@@ -861,7 +1325,8 @@
             if (vipTier) {
                 const vipBadge = document.createElement('span');
                 vipBadge.className = 'badge badge-vip';
-                vipBadge.textContent = `VIP ${vipTier}`;
+                // Don't add "VIP" prefix if tier already contains it
+                vipBadge.textContent = vipTier.toUpperCase().includes('VIP') ? vipTier : `VIP ${vipTier}`;
                 badgesContainer.appendChild(vipBadge);
             }
 
@@ -972,10 +1437,89 @@
             showModal(details, 'info');
         }
 
+        // Leaderboard Functions
+        let currentLeaderboardType = 'points';
+        let leaderboardData = null;
+
+        async function loadLeaderboard() {
+            try {
+                const response = await fetch('/api/leaderboard');
+                if (response.ok) {
+                    leaderboardData = await response.json();
+                    displayLeaderboard(currentLeaderboardType);
+                } else {
+                    document.getElementById('leaderboard-list').innerHTML = '<div class="leaderboard-empty">فشل تحميل البيانات</div>';
+                }
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+                document.getElementById('leaderboard-list').innerHTML = '<div class="leaderboard-empty">خطأ في الاتصال</div>';
+            }
+        }
+
+        function switchLeaderboard(type) {
+            currentLeaderboardType = type;
+            
+            // Update active tab
+            document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(`tab-${type}`).classList.add('active');
+            
+            // Display leaderboard
+            if (leaderboardData) {
+                displayLeaderboard(type);
+            }
+        }
+
+        function displayLeaderboard(type) {
+            const container = document.getElementById('leaderboard-list');
+            
+            if (!leaderboardData || !leaderboardData[type] || leaderboardData[type].length === 0) {
+                container.innerHTML = '<div class="leaderboard-empty">لا توجد بيانات متاحة</div>';
+                return;
+            }
+
+            const typeLabels = {
+                points: 'نقطة',
+                wins: 'فوز',
+                games: 'لعبة'
+            };
+
+            const label = typeLabels[type];
+            const players = leaderboardData[type];
+
+            container.innerHTML = players.map((player, index) => {
+                const rank = index + 1;
+                const rankClass = rank <= 3 ? `rank-${rank}` : '';
+                
+                const avatarUrl = player.avatar 
+                    ? `https://cdn.discordapp.com/avatars/${player.user_id}/${player.avatar}.png?size=128`
+                    : `https://cdn.discordapp.com/embed/avatars/${player.user_id % 5}.png`;
+
+                const value = player[type];
+                const subtitle = type === 'points' ? `${player.wins} فوز · ${player.games} لعبة` :
+                                type === 'wins' ? `${player.points} نقطة · ${player.games} لعبة` :
+                                `${player.points} نقطة · ${player.wins} فوز`;
+
+                return `
+                    <div class="leaderboard-item ${rankClass}">
+                        <div class="leaderboard-rank">#${rank}</div>
+                        <img src="${avatarUrl}" alt="${player.username}" class="leaderboard-avatar">
+                        <div class="leaderboard-info">
+                            <div class="leaderboard-name">${player.username}</div>
+                            <div class="leaderboard-subtitle">${subtitle}</div>
+                        </div>
+                        <div class="leaderboard-value">${value.toLocaleString()} ${label}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         // Load dashboard when page loads
         window.onload = function() {
             loadNightModePreference();
             loadDashboard();
+            loadLeaderboard();
         };
     </script>
 </script>

@@ -289,6 +289,52 @@ def api_set_vip():
     save_json(VIP_FILE, vip_data)
     return jsonify({'ok': True, 'user_id': int(user_id), 'vip_tier': tier})
 
+# --- Leaderboard endpoint ---
+@app.route('/api/leaderboard')
+def api_leaderboard():
+    """Get top players by points, wins, and games"""
+    try:
+        points_data = load_json(POINTS_FILE, {})
+        users_data = load_json(USERS_FILE, {})
+        
+        # Aggregate all players data
+        all_players = []
+        
+        for guild_id, guild_data in points_data.items():
+            for user_id, stats in guild_data.items():
+                # Try to get user info
+                user_info = users_data.get(user_id, {})
+                username = user_info.get('username', f'User {user_id}')
+                avatar = user_info.get('avatar')
+                
+                all_players.append({
+                    'user_id': user_id,
+                    'username': username,
+                    'avatar': avatar,
+                    'points': stats.get('points', 0),
+                    'wins': stats.get('wins', 0),
+                    'games': stats.get('games', 0),
+                    'best': stats.get('best', 0)
+                })
+        
+        # Sort by different criteria and get top 10
+        top_points = sorted(all_players, key=lambda x: x['points'], reverse=True)[:10]
+        top_wins = sorted(all_players, key=lambda x: x['wins'], reverse=True)[:10]
+        top_games = sorted(all_players, key=lambda x: x['games'], reverse=True)[:10]
+        
+        return jsonify({
+            'points': top_points,
+            'wins': top_wins,
+            'games': top_games
+        })
+    except Exception as e:
+        logging.error(f"Error in leaderboard endpoint: {e}")
+        return jsonify({
+            'points': [],
+            'wins': [],
+            'games': []
+        })
+
 # --- Points sync (from bot) ---
 @app.route('/api/points/update', methods=['POST'])
 def api_points_update():
@@ -527,15 +573,21 @@ def discord_callback():
         logging.info(f'User {user.get("username")} logged in successfully')
         
 
-        # --- Referral reward logic ---
+        # --- Save user info for leaderboard ---
         try:
-            users_data = load_json(USERS_FILE, {"users": []})
-            users_set = set(str(u) for u in users_data.get('users', []))
-            new_user = False
-            if str(user_data['id']) not in users_set:
-                users_set.add(str(user_data['id']))
-                save_json(USERS_FILE, {"users": sorted(list(users_set))})
-                new_user = True
+            users_db = load_json(USERS_FILE, {})
+            user_id = str(user_data['id'])
+            
+            # Save/update user info with username and avatar
+            users_db[user_id] = {
+                'username': user_data.get('global_name') or user_data.get('username'),
+                'avatar': user_data.get('avatar'),
+                'last_login': datetime.utcnow().isoformat()
+            }
+            save_json(USERS_FILE, users_db)
+            
+            # Check if new user for referral tracking
+            new_user = 'last_login' not in users_db.get(user_id, {}) or len(users_db) == 1
 
             # Check for referral in session
             inviter_id = session.pop('referral_inviter', None)
@@ -606,15 +658,17 @@ def health():
 
 @app.route('/')
 def serve_index():
-    # Check if user has seen splash screen
-    if not request.cookies.get('splash_shown'):
+    # Always show splash screen on fresh visits (session-based, not persistent cookie)
+    if not session.get('splash_shown_this_session'):
         return send_from_directory(BASE_DIR, 'splash.html')
     return send_from_directory(BASE_DIR, 'index.html')
 
 @app.route('/home')
 def serve_home():
+    # Mark splash as shown for this session only (cleared when browser closes)
+    session['splash_shown_this_session'] = True
+    session.permanent = False  # Session expires when browser closes
     response = make_response(send_from_directory(BASE_DIR, 'index.html'))
-    response.set_cookie('splash_shown', 'true', max_age=60*60*24*30)  # 30 days
     return response
 
 @app.route('/dashboard')

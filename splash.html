@@ -213,6 +213,95 @@
         .heart:nth-child(3) { left: 50%; animation-delay: 1s; }
         .heart:nth-child(4) { left: 70%; animation-delay: 1.5s; }
         .heart:nth-child(5) { left: 90%; animation-delay: 2s; }
+
+        /* Mobile Responsive Design */
+        @media (max-width: 768px) {
+            .splash-container {
+                padding: 1rem;
+            }
+
+            .logo {
+                width: 120px;
+                height: 120px;
+            }
+
+            .message {
+                font-size: 1.3rem;
+                padding: 0 1rem;
+            }
+
+            .hashtag {
+                font-size: 1rem;
+            }
+
+            .subtitle {
+                font-size: 0.9rem;
+                padding: 0 1rem;
+            }
+
+            .palestine-flag {
+                width: 50px;
+                height: 33px;
+            }
+
+            .flag-triangle {
+                border-top: 16.5px solid transparent;
+                border-bottom: 16.5px solid transparent;
+                border-left: 25px solid #CE1126;
+            }
+
+            .loading-bar {
+                width: 200px;
+            }
+
+            .enter-btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+
+            .heart {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            .message {
+                font-size: 1.1rem;
+            }
+
+            .hashtag {
+                font-size: 0.9rem;
+            }
+
+            .subtitle {
+                font-size: 0.85rem;
+            }
+
+            .palestine-flag {
+                width: 45px;
+                height: 30px;
+            }
+
+            .flag-triangle {
+                border-top: 15px solid transparent;
+                border-bottom: 15px solid transparent;
+                border-left: 22px solid #CE1126;
+            }
+
+            .loading-bar {
+                width: 150px;
+            }
+
+            .enter-btn {
+                padding: 10px 25px;
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -251,15 +340,13 @@
     </div>
 
     <script>
-        // Auto redirect after 3 seconds or click button
+        // Auto redirect after 3 seconds
         setTimeout(() => {
-            if (!localStorage.getItem('splash_shown')) {
-                localStorage.setItem('splash_shown', 'true');
-            }
+            enterSite();
         }, 3000);
 
         function enterSite() {
-            document.cookie = "splash_shown=true; max-age=2592000; path=/";
+            // Just redirect to /home - backend will handle session
             window.location.href = '/home';
         }
     </script>
