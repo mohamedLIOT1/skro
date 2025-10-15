@@ -302,8 +302,13 @@ def discord_callback():
 
 @app.route('/auth/logout')
 def auth_logout():
+    # Clear server-side session (fallback)
     session.clear()
-    return redirect('/')
+    # Clear JWT cookies on client
+    response = make_response(redirect('/'))
+    response.set_cookie('auth_token', '', expires=0, path='/', samesite='Lax')
+    response.set_cookie('user_logged_in', '', expires=0, path='/', samesite='Lax')
+    return response
 
 @app.route('/api/auth/me')
 def auth_me():
