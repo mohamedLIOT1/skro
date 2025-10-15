@@ -1,426 +1,324 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>سكرو — بوت ديسكورد العربي</title>
-  <meta name="description" content="بوت سكرو: ألعاب، إدارة، تفاعل، ودعوة سريعة لسيرفرك!">
-  <link rel="icon" href="assets/favicon.png">
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سكرو - البوت الرسمي للديسكورد</title>
+    <meta name="description" content="بوت سكرو على ديسكورد: ألعاب، إدارة، وتفاعل. جرّبه الآن وانضم لسيرفر الدعم.">
+    <meta name="theme-color" content="#5865F2">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="سكرو - بوت ديسكورد">
+    <meta property="og:description" content="بوت ديسكورد للألعاب والإدارة مع أوامر سهلة وسريعة">
+    <meta property="og:image" content="assets/logo.png">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="ar_AR">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="assets/logo.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="assets/favicon.png" type="image/png">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css?v=20251015">
+    
+    <!-- Google Fonts (Arabic Support) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header>
-    <nav class="nav">
-      <div class="container">
-        <div class="brand">سكرو</div>
-        <a href="#features">المميزات</a>
-        <a href="#commands">الأوامر</a>
-        <a href="#faq">الأسئلة الشائعة</a>
-        <a href="#feedback">الآراء</a>
-      </div>
-    </nav>
-  </header>
-  <main>
-    <section class="hero">
-      <div class="container hero-inner">
-        <img src="assets/logo.png" alt="شعار بوت سكرو" class="logo" loading="eager">
-        <h1>رحّب بـ سكرو</h1>
-        <p class="lead">بوت ديسكورد للترفيه والإدارة مع أوامر سهلة وسريعة. جاهز يزوّد التفاعل في سيرفرك.</p>
-        <div class="actions">
-          <a class="btn primary" id="inviteMain" target="_blank" rel="noopener">دعوة البوت</a>
-          <a class="btn secondary" id="supportBtn" target="_blank" rel="noopener">سيرفر الدعم <img src="supp.png" alt="دعم سكرو" style="height:32px;vertical-align:middle;margin-right:8px;border-radius:8px;box-shadow:0 2px 8px #5865f2a0;"></a>
-        </div>
-      </div>
-    </section>
-
-    <section id="features" class="section">
-      <div class="container grid">
-        <div class="card">
-          <h3>ألعاب وتحدّيات <img src="skrou.png" alt="لعبة سكرو الأصلية" style="height:40px;vertical-align:middle;margin-left:8px;border-radius:10px;box-shadow:0 2px 8px #764ba2a0;"></h3>
-          <p>ميني-جيمز ممتعة. جولات كروت تفاعلية مع أوامر سهلة بالعربي، تنافس مع أصحابك في أي سيرفر.</p>
-        </div>
-        <div class="card">
-          <h3>إدارة سهلة</h3>
-          <p>إدارة ذكية + أوامر تلقائية + فلاتر سبام + رولز تلقائية.</p>
-        </div>
-        <div class="card">
-          <h3>ثبات وسرعة</h3>
-          <p>وقت استجابة منخفض وأداء ثابت حتى وقت الذروة.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="commands" class="section alt">
-      <div class="container">
-        <h2>أوامر شائعة</h2>
-        <ul class="commands">
-          <li><code>/help</code> — قائمة المساعدة وجميع الأوامر.</li>
-          <li><code>/setup</code> — إعداد سريع للبوت في السيرفر.</li>
-          <li><code>/ping</code> — التحقق من الحالة والسرعة.</li>
-          <li><code>/play</code> — تشغيل موسيقى من رابط.</li>
-        </ul>
-        <small class="hint">أدخل معرّف التطبيق والصلاحيات وروابطك في الأسفل (انظر الكود).</small>
-      </div>
-    </section>
-
-    <section id="faq" class="section alt">
-      <div class="container">
-        <h2>الأسئلة الشائعة</h2>
-        <!-- تم حذف الأسئلة غير المرغوبة بناءً على طلبك -->
-      </div>
-    </section>
-
-    <section id="feedback" class="section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-      <div style="text-align:center;margin-bottom:1.5rem;">
-        <img src="ara2.png" alt="آراء المستخدمين" style="height:60px;border-radius:12px;box-shadow:0 2px 8px #667eea80;">
-      </div>
-      <div class="container">
-        <h2 style="color: white; text-align: center; margin-bottom: 2rem;">📝 شاركنا رأيك</h2>
-        <div style="max-width: 600px; margin: 0 auto; background: rgba(255,255,255,0.1); padding: 2rem; border-radius: 16px; backdrop-filter: blur(10px);">
-          <form id="feedbackForm" style="display: flex; flex-direction: column; gap: 1rem;">
-            <input type="text" id="feedbackName" placeholder="الاسم (اختياري)" style="padding: 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.9); font-family: Cairo, sans-serif; font-size: 1rem;">
-            <div style="text-align: center;">
-              <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">التقييم:</label>
-              <div id="starRating" style="font-size: 2rem; cursor: pointer;">
-                <span data-rating="1">⭐</span>
-                <span data-rating="2">⭐</span>
-                <span data-rating="3">⭐</span>
-                <span data-rating="4">⭐</span>
-                <span data-rating="5">⭐</span>
-              </div>
-              <input type="hidden" id="feedbackRating" value="5">
+    <!-- Navigation -->
+    <header class="navbar">
+        <div class="container">
+            <div class="brand">
+                <img src="skro.png" alt="لوجو سكرووو" class="brand-logo">
+                <span class="brand-name">سكرو</span>
             </div>
-            <textarea id="feedbackText" placeholder="اكتب رأيك هنا..." rows="5" required style="padding: 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.9); font-family: Cairo, sans-serif; font-size: 1rem; resize: vertical;"></textarea>
-            <button type="submit" class="btn primary" style="background: white; color: #667eea; font-weight: bold; padding: 14px; font-size: 1.1rem; border: none; cursor: pointer;">إرسال الرأي 🚀</button>
-          </form>
-          <div id="feedbackMessage" style="margin-top: 1rem; text-align: center; font-weight: bold; display: none;"></div>
+            
+            <nav class="nav-links">
+                <a href="#features" class="nav-link">المميزات</a>
+                <a href="#commands" class="nav-link">الأوامر</a>
+                <a href="#faq" class="nav-link">الأسئلة</a>
+            </nav>
+            
+            <div class="nav-actions">
+                <a href="#" class="btn btn-primary" id="inviteBtn">
+                    دعوة البوت
+                </a>
+                <a href="/dashboard.html" class="btn btn-accent" id="dashboardBtn" style="display:none">📊 لوحة التحكم</a>
+                <a href="/auth/discord/login" class="btn btn-secondary" id="loginBtn">تسجيل الدخول</a>
+                <a href="/auth/logout" class="btn btn-ghost" id="logoutBtn" style="display:none">تسجيل الخروج</a>
+            </div>
         </div>
-      </div>
-    </section>
-  </main>
-  <footer class="footer">
-    <div class="container">
-      <span>© <span id="year"></span> سكرو. جميع الحقوق محفوظة.</span>
-      <span class="sep">•</span>
-      <a target="_blank" rel="noopener" href="https://top.gg/bot/YOUR_CLIENT_ID">صفحة البوت على Top.gg</a>
-    </div>
-  </footer>
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-    // Star rating functionality
-    const stars = document.querySelectorAll('#starRating span');
-    const ratingInput = document.getElementById('feedbackRating');
-    let selectedRating = 5;
-    stars.forEach(star => {
-      star.addEventListener('click', function() {
-        selectedRating = this.getAttribute('data-rating');
-        ratingInput.value = selectedRating;
-        updateStars();
-      });
-      star.addEventListener('mouseenter', function() {
-        const hoverRating = this.getAttribute('data-rating');
-        highlightStars(hoverRating);
-      });
-    });
-    document.getElementById('starRating').addEventListener('mouseleave', function() {
-      updateStars();
-    });
-    function updateStars() {
-      stars.forEach((star, index) => {
-        if (index < selectedRating) {
-          star.style.opacity = '1';
-          star.style.filter = 'none';
-        } else {
-          star.style.opacity = '0.3';
-          star.style.filter = 'grayscale(100%)';
-        }
-      });
-    }
-    function highlightStars(rating) {
-      stars.forEach((star, index) => {
-        if (index < rating) {
-          star.style.opacity = '1';
-          star.style.filter = 'none';
-        } else {
-          star.style.opacity = '0.3';
-          star.style.filter = 'grayscale(100%)';
-        }
-      });
-    }
-    updateStars(); // Initialize
-    // Feedback form submission
-    document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const name = document.getElementById('feedbackName').value.trim() || 'مجهول';
-      const feedback = document.getElementById('feedbackText').value.trim();
-      const rating = selectedRating;
-      const messageDiv = document.getElementById('feedbackMessage');
-      const submitBtn = e.target.querySelector('button[type="submit"]');
-      if (!feedback) {
-        messageDiv.textContent = '⚠️ الرجاء كتابة رأيك';
-        messageDiv.style.display = 'block';
-        messageDiv.style.color = '#ffc107';
-        return;
-      }
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'جاري الإرسال...';
-      try {
-        const response = await fetch('/api/feedback', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, feedback, rating })
-        });
-        const result = await response.json();
-        if (result.ok) {
-          messageDiv.textContent = '✅ ' + result.message;
-          messageDiv.style.color = '#4caf50';
-          document.getElementById('feedbackForm').reset();
-          selectedRating = 5;
-          updateStars();
-        } else {
-          messageDiv.textContent = '❌ ' + (result.error || 'حدث خطأ');
-          messageDiv.style.color = '#f44336';
-        }
-      } catch (error) {
-        messageDiv.textContent = '❌ خطأ في الاتصال';
-        messageDiv.style.color = '#f44336';
-      } finally {
-        messageDiv.style.display = 'block';
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'إرسال الرأي 🚀';
-        setTimeout(() => {
-          messageDiv.style.display = 'none';
-        }, 5000);
-      }
-    });
-  </script>
-</body>
-</html>
+    </header>
 
     <main>
-      <section class="hero رولز تلقائية، فلاتر سبام، ول">
-        <divوجس منظمة.</p>
-          </ class="container hero-inner">
-          <picture class="logo-wrap" aria-hidden="true">
-            <source srcset="assetsdiv>
-          <div class="card">
-            <h3>ألعاب/logo.webp" type="image/webp" />
-            <img src="assets/logo.png وتحديات</h3>
-            <p>ميني-جيمز وتحديات يومية تحفّز التفاعل بين الأعضاء.</p>
-" alt="شعار بوت سكرو" class="logo" loading="eager"          </div>
-          <div class="card">
-            decoding="async" />
-          </picture>
-
-          <h1>رحّب بـ سكرو</h1>
-          < <h3>أداء وثبات</h3>
-p>بوت ديسكورد لل            <p>استجابة سريعة مع بنية موثوقة حتى وقتترفيه والإدارة مع أوامر سهلة وسريعة. جاهز يزوّد التفاعل في سيرفرك.</p>
-
-          <div class الضغط.</p>
-          </div>
-        </div>
-      </section>
-
-      <section id="commands" class="section alt">
-="actions">
-            <a class="btn primary" id="inviteMain" target="_blank" rel="noopener">دعوة        <div class="container">
-          <h2>أوامر شائعة</h2>
-          <ul class="commands">
-            < البوت</a>
-            <a class="btn secondary" id="supportBtn" target="_blank" rel="noopener">سيرفر الدعم</ali><code>/help</code> — قائمة المساعدة وجميع الأوامر.</li>
-            <>
-            <a class="btn ghost" href="#commands">استعراض الأli><code>/setup</code> — إعداد سريع للبوت في السيرفر.</li>
-            <li><codeوامر</a>
-          </div>
-
-          <small class="hint">أدخل معرّف>/ping</code> — التحقق من الحالة والسر التطبيق والصلاحيات وروابطك في الأسفل (انعة.</li>
-            <li><code>/play</code>ظر الكود).</small>
-        </div>
-      </section>
-
-      <section id="features — تشغيل ميوزك من رابط.</li>
-          </ul>
-          <p class="note">عدّل القائمة حسب بوتك" class="section">
-        <div class="container grid">
-          <div class="card">
-            <h3>ألعاب وتحدّيات</h3>
-            <p>ميني-جيمز ممتعة. تقدر لاحقًا نخليها تُقرأ من JSON تلقائيًا.</p>
-        </div>
-      </section>
-
-      <section id="faq ولفّات سريعة لشدّ الحماس بين الأعضاء.</p>
-          </div>
-          <div class="card">
-            <h3>إدارة سهلة</h" class="section">
-        <div class="container">
-          <h2>أسئلة متكررة</h2>
-          <!-- تم حذف الأسئلة غير المرغوبة بناءً على طلبك -->
-            <img src="supp.png" alt="دعم سكرو" style="height:32px;vertical-align:middle;margin-right:8px;border-radius:8px;box-shadow:0 2px 8px #5865f2a0;">
-            <img src="skrou.png" alt="لعبة سكرو الأصلية" style="height:40px;vertical-align:middle;margin-left:8px;border-radius:10px;box-shadow:0 2px 8px #764ba2a0;">
-        </div>
-      </section>
-
-      <section id="commands" class="section alt">
-        <div class="container">
-          <h2>أوامر شp>
-          </details>
-        </div>
-      </section>
-      <!-- Feedback Section -->
-      <section id="feedback" class="section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-        <div style="text-align:center;margin-bottom:1.5rem;">
-          <img src="ara2.png" alt="آراء المستخدمين" style="height:60px;border-radius:12px;box-shadow:0 2px 8px #667eea80;">
-        </div>
-        <div class="container">
-          <h2 style="color: white; text-align: center; margin-bottom: 2rem;">📝 شاركنا رأيك</h2>
-          <div style="max-width: 600px; margin: 0 auto; background: rgba(255,255,255,0.1); padding: 2rem; border-radius: 16px; backdrop-filter: blur(10px);">
-            <form id="feedbackForm" style="display: flex; flex-direction: column; gap: 1rem;">
-              <input type="text" id="feedbackName" placeholder="الاسم (اختياري)" 
-                style="padding: 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.9); font-family: Cairo, sans-serif; font-size: 1rem;">
-              
-              <div style="text-align: center;">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">التقييم:</label>
-                <div id="starRating" style="font-size: 2rem; cursor: pointer;">
-                  <span data-rating="1">⭐</span>
-                  <span data-rating="2">⭐</span>
-                  <span data-rating="3">⭐</span>
-                  <span data-rating="4">⭐</span>
-                  <span data-rating="5">⭐</span>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-logo">
+                        <img src="skro.png" alt="لوجو سكرووو" class="hero-logo-img">
+                    </div>
+                    
+                    <h1 class="hero-title">مرحباً بـ سكرو</h1>
+                    <p class="hero-description">
+                        بوت ديسكورد للترفيه والإدارة مع أوامر سهلة وسريعة. 
+                        جاهز يزوّد التفاعل في سيرفرك مع ألعاب ممتعة وإدارة ذكية.
+                    </p>
+                    
+                    <div class="hero-actions">
+                        <a href="#" class="btn btn-primary btn-large" id="inviteMainBtn">
+                            <span class="btn-icon">🚀</span>
+                            دعوة البوت
+                        </a>
+                        <a href="#" class="btn btn-secondary btn-large" id="supportBtn">
+                            <span class="btn-icon">💬</span>
+                            سيرفر الدعم
+                        </a>
+                        <a href="#commands" class="btn btn-ghost btn-large">
+                            <span class="btn-icon">📋</span>
+                            استعراض الأوامر
+                        </a>
+                    </div>
+                    
+                    <!-- لا توجد إحصائيات مزيفة، البوت يركز على المتعة فقط! -->
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <span class="stat-number" id="serverCount">؟</span>
+                            <span class="stat-label">سيرفر فعلي
+                            </span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" id="playersCount">؟</span>
+                            <span class="stat-label">لاعب مسجَّل في اللعبة</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" id="usersRegistered">؟</span>
+                            <span class="stat-label">مستخدم دخل الموقع</span>
+                        </div>
+                    </div>
                 </div>
-                <input type="hidden" id="feedbackRating" value="5">
-              </div>
+            </div>
+        </section>
 
-              <textarea id="feedbackText" placeholder="اكتب رأيك هنا..." rows="5" required
-                style="padding: 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.9); font-family: Cairo, sans-serif; font-size: 1rem; resize: vertical;"></textarea>
-              
-              <button type="submit" class="btn primary" style="background: white; color: #667eea; font-weight: bold; padding: 14px; font-size: 1.1rem; border: none; cursor: pointer;">
-                إرسال الرأي 🚀
-              </button>
-            </form>
-            <div id="feedbackMessage" style="margin-top: 1rem; text-align: center; font-weight: bold; display: none;"></div>
-          </div>
-        </div>
-      </section>
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">مميزات سكرووو</h2>
+                    <p class="section-subtitle">
+                        بوت لعبة سكرو الأصلية على ديسكورد — نظام نقاط دائم، جولات تفاعلية، وإحصائيات لكل لاعب.
+                    </p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">�</div>
+                        <h3 class="feature-title">لعبة سكرو الأصلية</h3>
+                        <p class="feature-description">جولات كروت تفاعلية مع أوامر سهلة بالعربي، تنافس مع أصحابك في أي سيرفر.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🏆</div>
+                        <h3 class="feature-title">نظام نقاط دائم</h3>
+                        <p class="feature-description">كل فوز أو مشاركة بيتم حفظ نقاطك تلقائياً، مع مكافآت للفائزين.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">�</div>
+                        <h3 class="feature-title">إحصائيات وملف شخصي</h3>
+                        <p class="feature-description">اعرف ترتيبك، أفضل نتيجة، وعدد مرات الفوز من خلال أمر !نقط.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <h3 class="feature-title">أوامر ترفيهية فقط</h3>
+                        <p class="feature-description">بدون إدارة أو موسيقى — كل التركيز على المتعة والتنافس.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Commands Section -->
+        <section id="commands" class="commands">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">الأوامر الحقيقية لبوت سكرووو</h2>
+                    <p class="section-subtitle">
+                        كل الأوامر تشتغل بالعربي في أي شات نصي على ديسكورد
+                    </p>
+                </div>
+                <div class="commands-grid">
+                    <div class="command-category">
+                        <h3 class="category-title">أوامر سكرووو</h3>
+                        <div class="command-list">
+                            <div class="command-item">
+                                <code class="command-code">سكرووو</code>
+                                <span class="command-desc">لبدء جولة جديدة من لعبة سكرو في الشات الحالي</span>
+                            </div>
+                            <div class="command-item">
+                                <code class="command-code">!نقط</code>
+                                <span class="command-desc">يعرض نقاطك، عدد مرات الفوز، أفضل نتيجة، ومتوسطك</span>
+                            </div>
+                            <div class="command-item">
+                                <code class="command-code">!نقط @لاعب</code>
+                                <span class="command-desc">يعرض نقاط لاعب آخر (بالمنشن)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="commands-note">
+                    <p>💡 <strong>ملاحظة:</strong> كل الأوامر تشتغل في أي سيرفر فيه البوت.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="faq">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">أسئلة متكررة</h2>
+                    <p class="section-subtitle">
+                        إجابات على أكثر الأسئلة شيوعاً حول البوت
+                    </p>
+                </div>
+                
+                <div class="faq-list">
+                    <details class="faq-item">
+                        <summary class="faq-question">
+                            <span>هل سكرو مجاني؟</span>
+                            <span class="faq-icon">+</span>
+                        </summary>
+                        <div class="faq-answer">
+                            <p>نعم، الاستخدام الأساسي مجاني تماماً. نوفر جميع المميزات الأساسية مجاناً، وممكن نضيف ميزات بريميوم متقدمة لاحقاً للمستخدمين اللي يحتاجوا مميزات إضافية.</p>
+                        </div>
+                    </details>
+                    
+                    <details class="faq-item">
+                        <summary class="faq-question">
+                            <span>ليه البوت محتاج الصلاحيات دي؟</span>
+                            <span class="faq-icon">+</span>
+                        </summary>
+                        <div class="faq-answer">
+                            <p>البوت يحتاج صلاحيات معينة عشان يقدر يشتغل بكفاءة. كل صلاحية لها وظيفة محددة - مثلاً قراءة الرسائل للأوامر، إدارة الرولز للترحيب التلقائي، وكتابة الرسائل للردود. نحرص على طلب أقل الصلاحيات المطلوبة فقط.</p>
+                        </div>
+                    </details>
+                    
+                    <details class="faq-item">
+                        <summary class="faq-question">
+                            <span>إزاي أقدر أخصص إعدادات البوت؟</span>
+                            <span class="faq-icon">+</span>
+                        </summary>
+                        <div class="faq-answer">
+                            <p>استخدم أمر <code>/setup</code> لبدء الإعداد السريع، أو ادخل على لوحة التحكم على الموقع. تقدر تخصص رسائل الترحيب، تفعيل/إلغاء المميزات، وضبط الأذونات حسب احتياجات سيرفرك.</p>
+                        </div>
+                    </details>
+                    
+                    <details class="faq-item">
+                        <summary class="faq-question">
+                            <span>البوت مش بيرد عليّ، إيه المشكلة؟</span>
+                            <span class="faq-icon">+</span>
+                        </summary>
+                        <div class="faq-answer">
+                            <p>تأكد إن البوت عنده الصلاحيات المطلوبة وإنه أونلاين. لو المشكلة مستمرة، تقدر تتواصل معنا في سيرفر الدعم وهنساعدك نحل المشكلة فوراً.</p>
+                        </div>
+                    </details>
+                    
+                    <details class="faq-item">
+                        <summary class="faq-question">
+                            <span>إزاي أقدر أبلّغ عن باج أو أطلب ميزة جديدة؟</span>
+                            <span class="faq-icon">+</span>
+                        </summary>
+                        <div class="faq-answer">
+                            <p>انضم لسيرفر الدعم وابعت تقرير مفصل عن المشكلة أو اقتراحك. فريقنا بيراجع كل التقارير ويستجيب بسرعة لتحسين تجربتك.</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- Welcome Section -->
+        <section id="welcome" class="hero" style="display:none; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); padding: 60px 0;">
+            <div class="container">
+                <div class="welcome-content" style="text-align: center;">
+                    <div class="user-avatar" style="margin: 0 auto 20px;">
+                        <img id="userAvatar" src="" alt="صورة المستخدم" style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--primary); box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);">
+                    </div>
+                    <h2 class="welcome-title" style="font-size: 2rem; color: var(--text-primary); margin-bottom: 10px;">
+                        مرحباً، <span id="userName">المستخدم</span>! 👋
+                    </h2>
+                    <p class="welcome-subtitle" style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 30px;">
+                        نورت الموقع! تقدر دلوقتي تشوف كل إحصائياتك في لوحة التحكم
+                    </p>
+                    <div class="welcome-actions" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                        <a href="/dashboard.html" class="btn btn-primary btn-large">
+                            📊 لوحة التحكم الكاملة
+                        </a>
+                        <a href="#commands" class="btn btn-secondary">
+                            🎮 استكشاف الأوامر
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta">
+            <div class="container">
+                <div class="cta-content">
+                    <h2 class="cta-title">جاهز تجرّب سكرو؟</h2>
+                    <p class="cta-description">
+                        انضم لآلاف السيرفرات اللي بتستخدم سكرو واكتشف الفرق
+                    </p>
+                    <div class="cta-actions">
+                        <a href="#" class="btn btn-primary btn-large" id="inviteCtaBtn">
+                            <span class="btn-icon">🚀</span>
+                            دعوة البوت الآن
+                        </a>
+                        <a href="#" class="btn btn-secondary btn-large" id="supportCtaBtn">
+                            <span class="btn-icon">💬</span>
+                            انضم للدعم
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
+    <!-- Footer -->
     <footer class="footer">
-      <div class="container">
-        <span>© <span id="year"></span> سكرو.ائعة</h2>
-          <ul class="commands">
-            <li><code>/help</code> — كل المساعدة والأوامر.</li>
-            <li><code>/setup</code> — إعداد سريع للبوت في السيرفر.</li>
-            <li><code>/ping</code> — التحقق من الحالة والسرعة.</ جميع الحقوق محفوظة.</span>
-        <span class="sep">•</span>
-        <a target="_blank" rel="noopener" href="https://top.gg/bot/YOUR_CLIENT_ID">صفحة البوت على Top.gg</li>
-            <li><code>/play</code> — تشغيل موسيقى من رابط.</li>
-          </ul>
-          <p class="a>
-      </div>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="skro.png" alt="سكرو" class="footer-logo">
+                    <span class="footer-brand-name">سكرو</span>
+                </div>
+                
+                <div class="footer-links">
+                    <a href="#" class="footer-link" id="topggLink">صفحة البوت على Top.gg</a>
+                    <a href="#" class="footer-link">سياسة الخصوصية</a>
+                    <a href="#" class="footer-link">شروط الاستخدام</a>
+                </div>
+                
+                <div class="footer-social">
+                    <a href="#" class="social-link" aria-label="ديسكورد">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>© <span id="currentYear">2024</span> سكرو. جميع الحقوق محفوظة.</p>
+                <p class="setup-note">
+                    <strong>للمطورين:</strong> lio 
+                </p>
+            </div>
+        </div>
     </footer>
 
-    <script>
-      document.getElementById('year').textContent = new Date().getFullYear();
-
-      // Star rating functionality
-      const stars = document.querySelectorAll('#starRating span');
-      const ratingInput = document.getElementById('feedbackRating');
-      let selectedRating = 5;
-
-      stars.forEach(star => {
-        star.addEventListener('click', function() {
-          selectedRating = this.getAttribute('data-rating');
-          ratingInput.value = selectedRating;
-          updateStars();
-        });
-
-        star.addEventListener('mouseenter', function() {
-          const hoverRating = this.getAttribute('data-rating');
-          highlightStars(hoverRating);
-        });
-      });
-
-      document.getElementById('starRating').addEventListener('mouseleave', function() {
-        updateStars();
-      });
-
-      function updateStars() {
-        stars.forEach((star, index) => {
-          if (index < selectedRating) {
-            star.style.opacity = '1';
-            star.style.filter = 'none';
-          } else {
-            star.style.opacity = '0.3';
-            star.style.filter = 'grayscale(100%)';
-          }
-        });
-      }
-
-      function highlightStars(rating) {
-        stars.forEach((star, index) => {
-          if (index < rating) {
-            star.style.opacity = '1';
-            star.style.filter = 'none';
-          } else {
-            star.style.opacity = '0.3';
-            star.style.filter = 'grayscale(100%)';
-          }
-        });
-      }
-
-      updateStars(); // Initialize
-
-      // Feedback form submission
-      document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const name = document.getElementById('feedbackName').value.trim() || 'مجهول';
-        const feedback = document.getElementById('feedbackText').value.trim();
-        const rating = selectedRating;
-        const messageDiv = document.getElementById('feedbackMessage');
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-
-        if (!feedback) {
-          messageDiv.textContent = '⚠️ الرجاء كتابة رأيك';
-          messageDiv.style.display = 'block';
-          messageDiv.style.color = '#ffc107';
-          return;
-        }
-
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'جاري الإرسال...';
-
-        try {
-          const response = await fetch('/api/feedback', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, feedback, rating })
-          });
-
-          const result = await response.json();
-
-          if (result.ok) {
-            messageDiv.textContent = '✅ ' + result.message;
-            messageDiv.style.color = '#4caf50';
-            document.getElementById('feedbackForm').reset();
-            selectedRating = 5;
-            updateStars();
-          } else {
-            messageDiv.textContent = '❌ ' + (result.error || 'حدث خطأ');
-            messageDiv.style.color = '#f44336';
-          }
-        } catch (error) {
-          messageDiv.textContent = '❌ خطأ في الاتصال';
-          messageDiv.style.color = '#f44336';
-        } finally {
-          messageDiv.style.display = 'block';
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'إرسال الرأي 🚀';
-          setTimeout(() => {
-            messageDiv.style.display = 'none';
-          }, 5000);
-        }
-      });
-    </script>
-  </body>
+    <!-- JavaScript -->
+    <script src="script.js?v=20251015"></script>
+</body>
 </html>
