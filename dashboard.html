@@ -16,6 +16,146 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             direction: rtl;
+            transition: background 0.5s ease;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Night Mode Styles */
+        body.night-mode {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        }
+
+        body.night-mode .header {
+            background: rgba(15, 12, 41, 0.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.night-mode .profile-card,
+        body.night-mode .stat-card,
+        body.night-mode .progress-section,
+        body.night-mode .action-card {
+            background: rgba(36, 36, 62, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.night-mode .profile-info h1,
+        body.night-mode .stat-value,
+        body.night-mode .action-title,
+        body.night-mode .progress-section h3 {
+            color: #e8e8e8;
+        }
+
+        body.night-mode .profile-info p,
+        body.night-mode .stat-title,
+        body.night-mode .action-desc {
+            color: #b3b3b3;
+        }
+
+        /* Stars Animation */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        body.night-mode .stars-container {
+            opacity: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8);
+            animation: shoot 3s linear infinite;
+        }
+
+        @keyframes shoot {
+            0% {
+                transform: translateX(0) translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-300px) translateY(300px);
+                opacity: 0;
+            }
+        }
+
+        /* Night Mode Toggle Button */
+        .night-mode-toggle {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .night-mode-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .night-mode-toggle .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .night-mode-toggle.active {
+            background: rgba(48, 43, 99, 0.8);
+        }
+
+        .night-mode-toggle.active .toggle-slider {
+            transform: translateX(24px);
+        }
+
+        /* Ensure content is above stars */
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            position: relative;
+            z-index: 10;
         }
 
         /* Header */
@@ -41,6 +181,7 @@
         .nav-buttons {
             display: flex;
             gap: 10px;
+            align-items: center;
         }
 
         .btn {
@@ -373,12 +514,18 @@
     </style>
 </head>
 <body>
+    <!-- Stars Container for Night Mode -->
+    <div class="stars-container" id="stars-container"></div>
+
     <!-- Header -->
     <div class="header">
         <div class="logo">
             🎮 بوت سكرو - لوحة التحكم
         </div>
         <div class="nav-buttons">
+            <div class="night-mode-toggle" id="night-mode-toggle" onclick="toggleNightMode()" title="الوضع الليلي">
+                <div class="toggle-slider">☀️</div>
+            </div>
             <a href="/" class="btn btn-outline">الصفحة الرئيسية</a>
             <a href="/auth/logout" class="btn btn-primary" id="logout-btn" style="display: none;">تسجيل الخروج</a>
         </div>
@@ -518,6 +665,67 @@
     </div>
 
     <script>
+        // Night Mode Functions
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            container.innerHTML = ''; // Clear existing stars
+            
+            // Create regular stars
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                container.appendChild(star);
+            }
+            
+            // Create shooting stars
+            for (let i = 0; i < 3; i++) {
+                const shootingStar = document.createElement('div');
+                shootingStar.className = 'shooting-star';
+                shootingStar.style.left = Math.random() * 100 + '%';
+                shootingStar.style.top = Math.random() * 50 + '%';
+                shootingStar.style.animationDelay = Math.random() * 5 + 's';
+                shootingStar.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                container.appendChild(shootingStar);
+            }
+        }
+
+        function toggleNightMode() {
+            const body = document.body;
+            const toggle = document.getElementById('night-mode-toggle');
+            const slider = toggle.querySelector('.toggle-slider');
+            
+            body.classList.toggle('night-mode');
+            toggle.classList.toggle('active');
+            
+            const isNightMode = body.classList.contains('night-mode');
+            slider.textContent = isNightMode ? '🌙' : '☀️';
+            
+            // Save preference to localStorage
+            localStorage.setItem('nightMode', isNightMode ? 'enabled' : 'disabled');
+            
+            // Create stars if enabling night mode
+            if (isNightMode) {
+                createStars();
+            }
+        }
+
+        // Load night mode preference
+        function loadNightModePreference() {
+            const nightMode = localStorage.getItem('nightMode');
+            if (nightMode === 'enabled') {
+                document.body.classList.add('night-mode');
+                document.getElementById('night-mode-toggle').classList.add('active');
+                document.querySelector('.toggle-slider').textContent = '🌙';
+                createStars();
+            }
+        }
+
         // Show a beautiful modal notification in the center of the screen
         function showModal(message, type = 'info') {
             // Remove any existing modal
@@ -745,7 +953,10 @@
         }
 
         // Load dashboard when page loads
-        window.onload = loadDashboard;
+        window.onload = function() {
+            loadNightModePreference();
+            loadDashboard();
+        };
     </script>
 </script>
 <script src="script.js?v=20251015"></script>
