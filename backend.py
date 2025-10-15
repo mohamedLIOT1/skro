@@ -310,7 +310,7 @@ def api_leaderboard():
                 avatar_url = None
                 # Check for valid avatar (not None, not empty, not 'None', not 'null')
                 if avatar and str(avatar).lower() not in ['none', 'null', '']:
-                    avatar_url = f"https://cdn.discordapp.com/avatars/{user_id}/{avatar}.png?size=128"
+                    avatar_url = f"https://cdn.discordapp.com/avatars/{user_id}/{avatar}.png?size=256"
                 else:
                     # Try to fetch from Discord API if not found
                     try:
@@ -321,19 +321,22 @@ def api_leaderboard():
                         if bot_token:
                             headers['Authorization'] = f'Bot {bot_token}'
                         resp = requests.get(discord_api_url, headers=headers, timeout=2)
+                        logging.info(f"Discord API response for user {user_id}: {resp.status_code} {resp.text}")
                         if resp.status_code == 200:
                             discord_user = resp.json()
                             avatar = discord_user.get('avatar')
                             if avatar:
-                                avatar_url = f"https://cdn.discordapp.com/avatars/{user_id}/{avatar}.png?size=128"
+                                avatar_url = f"https://cdn.discordapp.com/avatars/{user_id}/{avatar}.png?size=256"
                                 # Update users.json for next time
                                 user_info['avatar'] = avatar
                                 users_data[user_id] = user_info
                                 save_json(USERS_FILE, users_data)
                         if not avatar_url:
-                            avatar_url = f"https://cdn.discordapp.com/embed/avatars/{int(user_id) % 5}.png"
-                    except Exception:
-                        avatar_url = "https://cdn.discordapp.com/embed/avatars/0.png"
+                            # fallback: use Discord default avatar (256px)
+                            avatar_url = f"https://cdn.discordapp.com/embed/avatars/{int(user_id) % 5}.png?size=256"
+                    except Exception as ex:
+                        logging.error(f"Error fetching Discord avatar for {user_id}: {ex}")
+                        avatar_url = "https://cdn.discordapp.com/embed/avatars/0.png?size=256"
                 all_players.append({
                     'user_id': user_id,
                     'username': username,
