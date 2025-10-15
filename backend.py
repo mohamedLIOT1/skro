@@ -304,13 +304,22 @@ def api_leaderboard():
             for user_id, stats in guild_data.items():
                 # Try to get user info
                 user_info = users_data.get(user_id, {})
-                username = user_info.get('username', f'User {user_id}')
+                # Prefer global_name, then username, fallback to user_id
+                username = user_info.get('username') or f'User {user_id}'
                 avatar = user_info.get('avatar')
-                
+                # Always use Discord avatar link if avatar exists
+                if avatar:
+                    avatar_url = f"https://cdn.discordapp.com/avatars/{user_id}/{avatar}.png?size=128"
+                else:
+                    # Use Discord default avatar
+                    try:
+                        avatar_url = f"https://cdn.discordapp.com/embed/avatars/{int(user_id) % 5}.png"
+                    except Exception:
+                        avatar_url = "https://cdn.discordapp.com/embed/avatars/0.png"
                 all_players.append({
                     'user_id': user_id,
                     'username': username,
-                    'avatar': avatar,
+                    'avatar': avatar_url,
                     'points': stats.get('points', 0),
                     'wins': stats.get('wins', 0),
                     'games': stats.get('games', 0),
