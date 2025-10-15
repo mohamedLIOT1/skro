@@ -653,58 +653,50 @@
 
         async function purchaseLicense() {
             if (!userData || !userStats) return;
-
             if (userStats.credits < 50) {
-                alert('رصيد غير كافي! تحتاج إلى 50 كريدت على الأقل.');
+                showModal('رصيد غير كافي! تحتاج إلى 50 كريدت على الأقل لشراء الترخيص البريميوم.', 'error');
                 return;
             }
-
             try {
                 const response = await fetch(`/api/user/${userData.id}/purchase`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ product: 'premium_license' })
                 });
-
                 const result = await response.json();
-                
                 if (result.ok) {
-                    alert('تم شراء الترخيص البريميوم بنجاح! 🎉');
-                    // Reload dashboard to update stats
+                    showModal('تم شراء الترخيص البريميوم بنجاح! 🎉', 'success');
                     loadDashboard();
                 } else {
-                    alert('خطأ: ' + result.error);
+                    showModal('خطأ: ' + result.error, 'error');
                 }
             } catch (error) {
-                alert('خطأ في الشراء: ' + error.message);
+                showModal('خطأ في الشراء: ' + error.message, 'error');
             }
         }
 
         function showReferralCode() {
             if (!userData) return;
-            
             const referralCode = `سكرووو_صاحب_صحبو ${userData.id}`;
-            alert(`كود الإحالة الخاص بك:\n${referralCode}\n\nشارك هذا الكود مع أصدقائك!`);
+            showModal(`كود الإحالة الخاص بك:<br><b>${referralCode}</b><br><br>شارك هذا الكود مع أصدقائك!`, 'info');
         }
 
         function showDetailedStats() {
             if (!userStats) return;
-
             const details = `
-📊 إحصائياتك المفصلة:
-
-🏆 إجمالي النقاط: ${userStats.points.toLocaleString()}
-🥇 الانتصارات: ${userStats.wins.toLocaleString()}
-🎯 إجمالي الألعاب: ${userStats.games.toLocaleString()}
-📈 أفضل نتيجة: ${userStats.best.toLocaleString()}
-📊 المتوسط: ${userStats.average.toFixed(2)}
-💎 الكريدتس: ${userStats.credits.toFixed(2)}
-
-📈 معدل الفوز: ${userStats.games > 0 ? ((userStats.wins / userStats.games) * 100).toFixed(1) : 0}%
-🎮 متوسط النقاط لكل لعبة: ${userStats.games > 0 ? (userStats.points / userStats.games).toFixed(1) : 0}
+<div style='text-align:right;direction:rtl;'>
+<b>📊 إحصائياتك المفصلة:</b><br><br>
+🏆 إجمالي النقاط: <b>${userStats.points.toLocaleString()}</b><br>
+🥇 الانتصارات: <b>${userStats.wins.toLocaleString()}</b><br>
+🎯 إجمالي الألعاب: <b>${userStats.games.toLocaleString()}</b><br>
+📈 أفضل نتيجة: <b>${userStats.best.toLocaleString()}</b><br>
+📊 المتوسط: <b>${userStats.average.toFixed(2)}</b><br>
+💎 الكريدتس: <b>${userStats.credits.toFixed(2)}</b><br><br>
+📈 معدل الفوز: <b>${userStats.games > 0 ? ((userStats.wins / userStats.games) * 100).toFixed(1) : 0}%</b><br>
+🎮 متوسط النقاط لكل لعبة: <b>${userStats.games > 0 ? (userStats.points / userStats.games).toFixed(1) : 0}</b>
+</div>
             `;
-            
-            alert(details);
+            showModal(details, 'info');
         }
 
         // Load dashboard when page loads

@@ -1,3 +1,11 @@
+@app.route('/invite')
+def invite_referral():
+    ref = request.args.get('ref')
+    if ref and ref.isdigit():
+        session['referral_inviter'] = str(ref)
+        session.modified = True
+    # Redirect to login (or homepage)
+    return redirect('/auth/discord/login')
 import os
 import json
 import time
@@ -39,6 +47,7 @@ POINTS_FILE = os.path.join(DATA_DIR, 'points.json')
 VIP_FILE = os.path.join(DATA_DIR, 'vip_members.json')
 SERVERS_FILE = os.path.join(DATA_DIR, 'servers.json')
 REFERRALS_FILE = os.path.join(DATA_DIR, 'referrals.json')
+USERS_FILE = os.path.join(DATA_DIR, 'users.json')  # unique users who logged into website
 
 # Create data directory if it doesn't exist
 os.makedirs(DATA_DIR, exist_ok=True)
@@ -128,8 +137,25 @@ def save_json(path, data):
 def api_stats():
     servers_data = load_json(SERVERS_FILE, {"servers": 0})
     guild_count = int(servers_data.get('servers', 0))
+    # Players count = unique users found in points.json
+    points_data = load_json(POINTS_FILE, {})
+    unique_users = set()
+    try:
+        for _guild, users in points_data.items():
+            for uid in users.keys():
+                unique_users.add(str(uid))
+    except Exception:
+        pass
+    players_count = len(unique_users)
+
+    # Registered users count
+    users_data = load_json(USERS_FILE, {"users": []})
+    users_registered = len(set(str(u) for u in users_data.get('users', [])))
+
     return jsonify({
-        'guild_count': guild_count
+        'guild_count': guild_count,
+        'players_count': players_count,
+        'users_registered': users_registered,
     })
 
 @app.route('/api/user/<int:user_id>/points')
@@ -406,6 +432,43 @@ def discord_callback():
         
         logging.info(f'User {user.get("username")} logged in successfully')
         
+
+        # --- Referral reward logic ---
+        try:
+            users_data = load_json(USERS_FILE, {"users": []})
+            users_set = set(str(u) for u in users_data.get('users', []))
+            new_user = False
+            if str(user_data['id']) not in users_set:
+                users_set.add(str(user_data['id']))
+                save_json(USERS_FILE, {"users": sorted(list(users_set))})
+                new_user = True
+
+            # Check for referral in session
+            inviter_id = session.pop('referral_inviter', None)
+            if new_user and inviter_id and inviter_id != str(user_data['id']):
+                # Prevent self-referral
+                referrals = load_json(REFERRALS_FILE, {})
+                key = f'{inviter_id}:{user_data["id"]}'
+                if key not in referrals:
+                    # Reward inviter with 10 points (guild_id=0 for global)
+                    points = load_json(POINTS_FILE, {})
+                    guild_id = '0'
+                    inviter_entry = points.get(guild_id, {}).get(inviter_id)
+                    if not inviter_entry:
+                        inviter_entry = {'points': 0, 'wins': 0, 'games': 0, 'best': 0, 'total_score': 0}
+                    inviter_entry['points'] += 10
+                    # Save back
+                    if guild_id not in points:
+                        points[guild_id] = {}
+                    points[guild_id][inviter_id] = inviter_entry
+                    save_json(POINTS_FILE, points)
+                    # Log referral
+                    referrals[key] = {'ts': int(time.time())}
+                    save_json(REFERRALS_FILE, referrals)
+                    logging.info(f"Referral: {inviter_id} invited {user_data['id']} (10 points awarded)")
+        except Exception as e:
+            logging.warning(f"Failed referral logic: {e}")
+
         # Create response and set JWT token in cookie
         response = make_response(redirect('/dashboard'))
         response.set_cookie(

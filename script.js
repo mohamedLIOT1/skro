@@ -1,3 +1,47 @@
+// Show a beautiful modal notification in the center of the screen
+function showModal(message, type = 'info') {
+    // Remove any existing modal
+    document.querySelectorAll('.modal-notification').forEach(e => e.remove());
+    const modal = document.createElement('div');
+    modal.className = `modal-notification modal-${type}`;
+    modal.innerHTML = `
+        <div class="modal-content">
+            <span class="modal-close" style="position:absolute;top:10px;left:20px;cursor:pointer;font-size:1.5rem;">&times;</span>
+            <div class="modal-icon" style="font-size:2.5rem;margin-bottom:10px;">${type === 'success' ? '🎉' : type === 'error' ? '❌' : 'ℹ️'}</div>
+            <div class="modal-message" style="font-size:1.2rem;line-height:1.7;">${message}</div>
+        </div>
+    `;
+    Object.assign(modal.style, {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'rgba(30,34,54,0.65)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 2000
+    });
+    const content = modal.querySelector('.modal-content');
+    Object.assign(content.style, {
+        background: 'white',
+        color: '#222',
+        borderRadius: '18px',
+        padding: '36px 32px 28px 32px',
+        minWidth: '320px',
+        maxWidth: '90vw',
+        boxShadow: '0 8px 40px rgba(88,101,242,0.18)',
+        textAlign: 'center',
+        position: 'relative',
+        fontFamily: 'Cairo, sans-serif',
+        border: type === 'success' ? '2px solid #57f287' : type === 'error' ? '2px solid #ed4245' : '2px solid #5865f2',
+    });
+    modal.querySelector('.modal-close').onclick = () => modal.remove();
+    modal.onclick = e => { if (e.target === modal) modal.remove(); };
+    document.body.appendChild(modal);
+    setTimeout(() => { if (document.body.contains(modal)) modal.remove(); }, 4000);
+}
 // Configuration - Replace with your bot's actual values
 const BOT_CONFIG = {
     CLIENT_ID: '1424342801801416834', // Replace with your bot's client ID
@@ -302,17 +346,23 @@ function animateCounters() {
 
 // Update stats (mock function - replace with real API calls)
 function updateStats() {
-    const el = document.getElementById('serverCount');
-    if (el) el.textContent = '…';
+    const elServers = document.getElementById('serverCount');
+    const elPlayers = document.getElementById('playersCount');
+    const elUsers = document.getElementById('usersRegistered');
+    if (elServers) elServers.textContent = '…';
+    if (elPlayers) elPlayers.textContent = '…';
+    if (elUsers) elUsers.textContent = '…';
     // Try API first
     fetch('/api/stats')
         .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
         .then(j => {
-            const val = Number(j.guild_count);
-            if (el) {
-                el.textContent = (!isNaN(val) ? val : 0).toLocaleString();
-                animateCounters();
-            }
+            const guilds = Number(j.guild_count);
+            const players = Number(j.players_count || 0);
+            const users = Number(j.users_registered || 0);
+            if (elServers) elServers.textContent = (!isNaN(guilds) ? guilds : 0).toLocaleString();
+            if (elPlayers) elPlayers.textContent = (!isNaN(players) ? players : 0).toLocaleString();
+            if (elUsers) elUsers.textContent = (!isNaN(users) ? users : 0).toLocaleString();
+            animateCounters();
         })
         .catch(err => {
             console.warn('فشل /api/stats، سنجرب servers.json', err);
@@ -320,14 +370,17 @@ function updateStats() {
                 .then(r => r.json())
                 .then(d => {
                     const v = Number(d.servers);
-                    if (el) {
-                        el.textContent = (!isNaN(v) ? v : 0).toLocaleString();
-                        animateCounters();
-                    }
+                    if (elServers) elServers.textContent = (!isNaN(v) ? v : 0).toLocaleString();
+                    // fallback: players/users unknown when offline
+                    if (elPlayers) elPlayers.textContent = '0';
+                    if (elUsers) elUsers.textContent = '0';
+                    animateCounters();
                 })
                 .catch(e2 => {
                     console.error('فشل قراءة servers.json', e2);
-                    if (el) el.textContent = '0';
+                    if (elServers) elServers.textContent = '0';
+                    if (elPlayers) elPlayers.textContent = '0';
+                    if (elUsers) elUsers.textContent = '0';
                 });
         });
 }
@@ -367,13 +420,15 @@ function copyToClipboard(text) {
     }
 }
 
-// Show notification/toast message
-function showNotification(message, type = 'info') {
+// Show notification/toast message (fallback to modal for important messages)
+function showNotification(message, type = 'info', useModal = false) {
+    if (useModal) {
+        showModal(message, type);
+        return;
+    }
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.textContent = message;
-    
-    // Style the notification
     Object.assign(notification.style, {
         position: 'fixed',
         top: '20px',
@@ -388,30 +443,18 @@ function showNotification(message, type = 'info') {
         transition: 'transform 0.3s ease',
         maxWidth: '300px'
     });
-    
-    // Set background color based on type
     const colors = {
         info: '#5865f2',
         success: '#57f287',
         warning: '#fee75c',
         error: '#ed4245'
     };
-    
     notification.style.backgroundColor = colors[type] || colors.info;
-    
     document.body.appendChild(notification);
-    
-    // Animate in
-    setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
-    }, 100);
-    
-    // Auto remove after 3 seconds
+    setTimeout(() => { notification.style.transform = 'translateX(0)'; }, 100);
     setTimeout(() => {
         notification.style.transform = 'translateX(100%)';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
+        setTimeout(() => { if (document.body.contains(notification)) document.body.removeChild(notification); }, 300);
     }, 3000);
 }
 
