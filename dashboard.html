@@ -518,6 +518,51 @@
     </div>
 
     <script>
+        // Show a beautiful modal notification in the center of the screen
+        function showModal(message, type = 'info') {
+            // Remove any existing modal
+            document.querySelectorAll('.modal-notification').forEach(e => e.remove());
+            const modal = document.createElement('div');
+            modal.className = `modal-notification modal-${type}`;
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="modal-close" style="position:absolute;top:10px;left:20px;cursor:pointer;font-size:1.5rem;">&times;</span>
+                    <div class="modal-icon" style="font-size:2.5rem;margin-bottom:10px;">${type === 'success' ? '🎉' : type === 'error' ? '❌' : 'ℹ️'}</div>
+                    <div class="modal-message" style="font-size:1.2rem;line-height:1.7;">${message}</div>
+                </div>
+            `;
+            Object.assign(modal.style, {
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                background: 'rgba(30,34,54,0.65)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 2000
+            });
+            const content = modal.querySelector('.modal-content');
+            Object.assign(content.style, {
+                background: 'white',
+                color: '#222',
+                borderRadius: '18px',
+                padding: '36px 32px 28px 32px',
+                minWidth: '320px',
+                maxWidth: '90vw',
+                boxShadow: '0 8px 40px rgba(88,101,242,0.18)',
+                textAlign: 'center',
+                position: 'relative',
+                fontFamily: 'Cairo, sans-serif',
+                border: type === 'success' ? '2px solid #57f287' : type === 'error' ? '2px solid #ed4245' : '2px solid #5865f2',
+            });
+            modal.querySelector('.modal-close').onclick = () => modal.remove();
+            modal.onclick = e => { if (e.target === modal) modal.remove(); };
+            document.body.appendChild(modal);
+            setTimeout(() => { if (document.body.contains(modal)) modal.remove(); }, 4000);
+        }
+
         let userData = null;
         let userStats = null;
 
@@ -702,5 +747,7 @@
         // Load dashboard when page loads
         window.onload = loadDashboard;
     </script>
+</script>
+<script src="script.js?v=20251015"></script>
 </body>
 </html>
