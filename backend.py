@@ -349,6 +349,51 @@ def api_referral():
     # هنا المفروض تكافئ الاثنين في points.json (محاكاة حالياً)
     return jsonify({'ok': True, 'message': 'تم تسجيل الإحالة'})
 
+# Feedback/Reviews endpoint - sends to Discord webhook
+FEEDBACK_WEBHOOK_URL = 'https://discord.com/api/webhooks/1427909014288863242/hDSFXIXCBU_qqPrH9LbwLqRSm0of0kawA2WEQoWFHcYywgz67M9uKjQ75fkZkO7atiaf'
+
+@app.route('/api/feedback', methods=['POST'])
+def api_feedback():
+    payload = request.json or {}
+    name = payload.get('name', 'مجهول').strip()
+    feedback = payload.get('feedback', '').strip()
+    rating = payload.get('rating', 0)
+    
+    if not feedback:
+        return jsonify({'ok': False, 'error': 'الرجاء كتابة رأيك'}), 400
+    
+    if len(feedback) > 1000:
+        return jsonify({'ok': False, 'error': 'الرأي طويل جداً (الحد الأقصى 1000 حرف)'}), 400
+    
+    # Prepare Discord embed
+    stars = '⭐' * min(int(rating), 5) if rating else 'بدون تقييم'
+    embed = {
+        "title": "📝 رأي جديد من الموقع",
+        "color": 5814783,  # Blue color
+        "fields": [
+            {"name": "👤 الاسم", "value": name, "inline": True},
+            {"name": "⭐ التقييم", "value": stars, "inline": True},
+            {"name": "💬 الرأي", "value": feedback, "inline": False}
+        ],
+        "footer": {"text": "موقع سكرو"},
+        "timestamp": datetime.utcnow().isoformat()
+    }
+    
+    try:
+        response = requests.post(
+            FEEDBACK_WEBHOOK_URL,
+            json={"embeds": [embed]},
+            timeout=5
+        )
+        if response.status_code in [200, 204]:
+            return jsonify({'ok': True, 'message': 'شكراً لك! تم إرسال رأيك بنجاح 🎉'})
+        else:
+            logging.error(f'Webhook failed: {response.status_code} - {response.text}')
+            return jsonify({'ok': False, 'error': 'فشل إرسال الرأي'}), 500
+    except Exception as e:
+        logging.error(f'Webhook error: {e}')
+        return jsonify({'ok': False, 'error': 'خطأ في الاتصال'}), 500
+
 # ------------------ OAuth2 Flow ------------------
 @app.route('/auth/discord/login')
 def discord_login():
