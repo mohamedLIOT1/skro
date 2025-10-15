@@ -64,6 +64,12 @@ OAUTH_SCOPES = ['identify', 'guilds']
 # API key for bot-to-website VIP sync (change this to a private value if needed)
 VIP_API_KEY = os.getenv('VIP_API_KEY', 'skro_vip_api_key_change_me')
 
+def _require_api_key():
+    api_key = request.headers.get('X-API-Key') or request.args.get('api_key')
+    if api_key != VIP_API_KEY:
+        return False
+    return True
+
 # --- JWT Helpers ---
 
 def create_jwt_token(user_data):
@@ -203,8 +209,7 @@ def api_get_vip(user_id: int):
 @app.route('/api/vip/set', methods=['POST'])
 def api_set_vip():
     # Simple API key auth
-    api_key = request.headers.get('X-API-Key') or request.args.get('api_key')
-    if api_key != VIP_API_KEY:
+    if not _require_api_key():
         return jsonify({'ok': False, 'error': 'غير مصرح'}), 401
     payload = request.json or {}
     user_id = str(payload.get('user_id'))
@@ -219,6 +224,94 @@ def api_set_vip():
         vip_data.pop(user_id, None)
     save_json(VIP_FILE, vip_data)
     return jsonify({'ok': True, 'user_id': int(user_id), 'vip_tier': tier})
+
+# --- Points sync (from bot) ---
+@app.route('/api/points/update', methods=['POST'])
+def api_points_update():
+    if not _require_api_key():
+        return jsonify({'ok': False, 'error': 'غير مصرح'}), 401
+    body = request.json or {}
+    guild_id = str(body.get('guild_id'))
+    user_id = str(body.get('user_id'))
+    if not guild_id or not user_id:
+        return jsonify({'ok': False, 'error': 'guild_id أو user_id مفقود'}), 400
+
+    mode = (body.get('mode') or 'inc').lower()  # 'inc' or 'set'
+    delta_points = int(body.get('points') or 0)
+    delta_wins = int(body.get('wins') or 0)
+    delta_games = int(body.get('games') or 0)
+    score = body.get('score')  # points achieved in last game (affects best and total_score)
+    best = body.get('best')
+    total_score = body.get('total_score')
+
+    data = load_json(POINTS_FILE, {})
+    guild_map = data.get(guild_id) or {}
+    user_entry = guild_map.get(user_id) or {
+        'points': 0,
+        'wins': 0,
+        'games': 0,
+        'best': 0,
+        'total_score': 0
+    }
+
+    if mode == 'set':
+        if body.get('points') is not None:
+            user_entry['points'] = int(body['points'])
+        if body.get('wins') is not None:
+            user_entry['wins'] = int(body['wins'])
+        if body.get('games') is not None:
+            user_entry['games'] = int(body['games'])
+        if best is not None:
+            user_entry['best'] = int(best)
+        if total_score is not None:
+            user_entry['total_score'] = int(total_score)
+    else:
+        # inc mode
+        user_entry['points'] += delta_points
+        user_entry['wins'] += delta_wins
+        user_entry['games'] += delta_games
+        if best is not None:
+            user_entry['best'] = max(int(best), int(user_entry.get('best', 0)))
+        if score is not None:
+            try:
+                s = int(score)
+                user_entry['total_score'] += s
+                user_entry['best'] = max(int(user_entry.get('best', 0)), s)
+            except Exception:
+                pass
+
+    guild_map[user_id] = user_entry
+    data[guild_id] = guild_map
+    save_json(POINTS_FILE, data)
+
+    # Build aggregated like /api/user/<id>/points
+    aggregated = {
+        'points': user_entry['points'],
+        'wins': user_entry['wins'],
+        'games': user_entry['games'],
+        'best': user_entry['best'],
+        'total_score': user_entry['total_score']
+    }
+    aggregated['average'] = (aggregated['total_score'] / aggregated['games']) if aggregated['games'] else 0
+
+    return jsonify({'ok': True, 'guild_id': int(guild_id), 'user_id': int(user_id), 'entry': user_entry, 'aggregated': aggregated})
+
+# --- Servers (guilds) count sync ---
+@app.route('/api/servers/set', methods=['POST'])
+def api_servers_set():
+    if not _require_api_key():
+        return jsonify({'ok': False, 'error': 'غير مصرح'}), 401
+    body = request.json or {}
+    count = body.get('servers')
+    if count is None:
+        return jsonify({'ok': False, 'error': 'servers مفقود'}), 400
+    try:
+        count = int(count)
+    except Exception:
+        return jsonify({'ok': False, 'error': 'servers يجب أن يكون رقم'}), 400
+
+    save_json(SERVERS_FILE, {'servers': count})
+    return jsonify({'ok': True, 'servers': count})
 
 # Referral system endpoint (for سكرووو_صاحب_صحبو)
 @app.route('/api/referral', methods=['POST'])
