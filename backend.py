@@ -61,6 +61,9 @@ DISCORD_API_BASE = 'https://discord.com/api'
 
 OAUTH_SCOPES = ['identify', 'guilds']
 
+# API key for bot-to-website VIP sync (change this to a private value if needed)
+VIP_API_KEY = os.getenv('VIP_API_KEY', 'skro_vip_api_key_change_me')
+
 # --- JWT Helpers ---
 
 def create_jwt_token(user_data):
@@ -189,6 +192,33 @@ def api_owner_check(user_id: int):
     owner_data = load_json(owner_config_file, {'owner_ids': []})
     is_owner = user_id in owner_data.get('owner_ids', [])
     return jsonify({'is_owner': is_owner, 'user_id': user_id})
+
+# --- VIP endpoints for sync with the bot ---
+@app.route('/api/vip/<int:user_id>')
+def api_get_vip(user_id: int):
+    vip_data = load_json(VIP_FILE, {})
+    tier = vip_data.get(str(user_id))
+    return jsonify({'user_id': user_id, 'vip_tier': tier})
+
+@app.route('/api/vip/set', methods=['POST'])
+def api_set_vip():
+    # Simple API key auth
+    api_key = request.headers.get('X-API-Key') or request.args.get('api_key')
+    if api_key != VIP_API_KEY:
+        return jsonify({'ok': False, 'error': 'غير مصرح'}), 401
+    payload = request.json or {}
+    user_id = str(payload.get('user_id'))
+    tier = payload.get('vip_tier')  # None or string like "Diamond" | "Gold" | "Silver"
+    if not user_id:
+        return jsonify({'ok': False, 'error': 'user_id مفقود'}), 400
+    vip_data = load_json(VIP_FILE, {})
+    if tier:
+        vip_data[user_id] = tier
+    else:
+        # Remove VIP if tier is falsy
+        vip_data.pop(user_id, None)
+    save_json(VIP_FILE, vip_data)
+    return jsonify({'ok': True, 'user_id': int(user_id), 'vip_tier': tier})
 
 # Referral system endpoint (for سكرووو_صاحب_صحبو)
 @app.route('/api/referral', methods=['POST'])
