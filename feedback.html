@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>آراء المستخدمين - سكرو</title>
+    <meta name="description" content="شاركنا رأيك في بوت سكرو">
+    <meta name="theme-color" content="#5865F2">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="assets/favicon.png" type="image/png">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css?v=20251015">
+    
+    <!-- Google Fonts (Arabic Support) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <header class="navbar">
+        <div class="container">
+            <div class="brand">
+                <img src="skro.png" alt="لوجو سكرووو" class="brand-logo">
+                <span class="brand-name">سكرو</span>
+            </div>
+            
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">الرئيسية</a>
+                <a href="index.html#features" class="nav-link">المميزات</a>
+                <a href="index.html#commands" class="nav-link">الأوامر</a>
+                <a href="feedback.html" class="nav-link">الآراء</a>
+            </nav>
+            
+            <div class="nav-actions">
+                <a href="index.html" class="btn btn-secondary">العودة للرئيسية</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Feedback Hero Section -->
+        <section class="hero" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 80px 0 60px;">
+            <div class="container">
+                <div style="text-align:center;margin-bottom:2rem;">
+                    <img src="ara2.png" alt="آراء المستخدمين" style="height:80px;border-radius:16px;box-shadow:0 4px 20px rgba(255,255,255,0.3);">
+                </div>
+                <h1 style="text-align:center;color:white;font-size:2.5rem;margin-bottom:1rem;">📝 شاركنا رأيك</h1>
+                <p style="text-align:center;color:rgba(255,255,255,0.9);font-size:1.2rem;max-width:600px;margin:0 auto;">
+                    رأيك مهم لينا! ساعدنا نحسّن البوت ونطوره بناءً على ملاحظاتك واقتراحاتك
+                </p>
+            </div>
+        </section>
+
+        <!-- Feedback Form Section -->
+        <section class="section" style="background: var(--bg-secondary); padding: 60px 0;">
+            <div class="container">
+                <div style="max-width: 700px; margin: 0 auto; background: var(--bg-card); padding: 3rem; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                    <form id="feedbackForm" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <!-- Name Input -->
+                        <div class="form-group">
+                            <label for="feedbackName" style="display:block;margin-bottom:0.5rem;font-weight:600;color:var(--text-primary);">
+                                الاسم (اختياري)
+                            </label>
+                            <input 
+                                type="text" 
+                                id="feedbackName" 
+                                placeholder="اكتب اسمك أو اسم السيرفر..."
+                                style="width:100%;padding:14px;border-radius:10px;border:2px solid var(--border-primary);background:var(--bg-tertiary);color:var(--text-primary);font-family:Cairo,sans-serif;font-size:1rem;transition:border-color 0.3s;"
+                                onfocus="this.style.borderColor='var(--primary)'"
+                                onblur="this.style.borderColor='var(--border-primary)'"
+                            >
+                        </div>
+
+                        <!-- Rating -->
+                        <div class="form-group">
+                            <label style="display:block;margin-bottom:0.75rem;font-weight:600;color:var(--text-primary);text-align:center;">
+                                التقييم
+                            </label>
+                            <div id="starRating" style="font-size:2.5rem;cursor:pointer;text-align:center;user-select:none;">
+                                <span data-rating="1" style="transition:all 0.2s;">⭐</span>
+                                <span data-rating="2" style="transition:all 0.2s;">⭐</span>
+                                <span data-rating="3" style="transition:all 0.2s;">⭐</span>
+                                <span data-rating="4" style="transition:all 0.2s;">⭐</span>
+                                <span data-rating="5" style="transition:all 0.2s;">⭐</span>
+                            </div>
+                            <input type="hidden" id="feedbackRating" value="5">
+                            <p id="ratingText" style="text-align:center;margin-top:0.5rem;color:var(--text-secondary);font-weight:500;">ممتاز 🎉</p>
+                        </div>
+
+                        <!-- Feedback Type -->
+                        <div class="form-group">
+                            <label style="display:block;margin-bottom:0.5rem;font-weight:600;color:var(--text-primary);">
+                                نوع الرأي
+                            </label>
+                            <select 
+                                id="feedbackType" 
+                                style="width:100%;padding:14px;border-radius:10px;border:2px solid var(--border-primary);background:var(--bg-tertiary);color:var(--text-primary);font-family:Cairo,sans-serif;font-size:1rem;cursor:pointer;"
+                            >
+                                <option value="general">رأي عام 💬</option>
+                                <option value="bug">تقرير مشكلة 🐛</option>
+                                <option value="feature">اقتراح ميزة جديدة 💡</option>
+                                <option value="support">طلب دعم 🆘</option>
+                            </select>
+                        </div>
+
+                        <!-- Feedback Text -->
+                        <div class="form-group">
+                            <label for="feedbackText" style="display:block;margin-bottom:0.5rem;font-weight:600;color:var(--text-primary);">
+                                رأيك <span style="color:#ed4245;">*</span>
+                            </label>
+                            <textarea 
+                                id="feedbackText" 
+                                placeholder="اكتب رأيك أو اقتراحك هنا... نحن نسمعك! 🎧"
+                                rows="6" 
+                                required
+                                style="width:100%;padding:14px;border-radius:10px;border:2px solid var(--border-primary);background:var(--bg-tertiary);color:var(--text-primary);font-family:Cairo,sans-serif;font-size:1rem;resize:vertical;transition:border-color 0.3s;"
+                                onfocus="this.style.borderColor='var(--primary)'"
+                                onblur="this.style.borderColor='var(--border-primary)'"
+                            ></textarea>
+                            <small style="color:var(--text-muted);font-size:0.875rem;">الحد الأقصى: 1000 حرف</small>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button 
+                            type="submit" 
+                            class="btn btn-primary btn-large" 
+                            style="width:100%;padding:16px;font-size:1.2rem;font-weight:700;margin-top:1rem;transition:all 0.3s;"
+                        >
+                            إرسال الرأي 🚀
+                        </button>
+                    </form>
+
+                    <!-- Message Display -->
+                    <div id="feedbackMessage" style="margin-top:1.5rem;text-align:center;font-weight:600;font-size:1.1rem;display:none;padding:1rem;border-radius:10px;"></div>
+                </div>
+
+                <!-- Info Cards -->
+                <div style="max-width:700px;margin:3rem auto 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;">
+                    <div style="background:var(--bg-card);padding:1.5rem;border-radius:12px;text-align:center;border:1px solid var(--border-primary);">
+                        <div style="font-size:2rem;margin-bottom:0.5rem;">💬</div>
+                        <h3 style="color:var(--text-primary);margin-bottom:0.5rem;font-size:1.1rem;">رأيك يهمنا</h3>
+                        <p style="color:var(--text-secondary);font-size:0.9rem;">كل رأي بيساعدنا نحسّن البوت</p>
+                    </div>
+                    <div style="background:var(--bg-card);padding:1.5rem;border-radius:12px;text-align:center;border:1px solid var(--border-primary);">
+                        <div style="font-size:2rem;margin-bottom:0.5rem;">⚡</div>
+                        <h3 style="color:var(--text-primary);margin-bottom:0.5rem;font-size:1.1rem;">رد سريع</h3>
+                        <p style="color:var(--text-secondary);font-size:0.9rem;">نراجع كل الآراء ونرد بسرعة</p>
+                    </div>
+                    <div style="background:var(--bg-card);padding:1.5rem;border-radius:12px;text-align:center;border:1px solid var(--border-primary);">
+                        <div style="font-size:2rem;margin-bottom:0.5rem;">🔒</div>
+                        <h3 style="color:var(--text-primary);margin-bottom:0.5rem;font-size:1.1rem;">خصوصية تامة</h3>
+                        <p style="color:var(--text-secondary);font-size:0.9rem;">معلوماتك آمنة معانا 100%</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="skro.png" alt="سكرو" class="footer-logo">
+                    <span class="footer-brand-name">سكرو</span>
+                </div>
+                
+                <div class="footer-links">
+                    <a href="index.html" class="footer-link">الرئيسية</a>
+                    <a href="feedback.html" class="footer-link">الآراء</a>
+                    <a href="#" class="footer-link">سياسة الخصوصية</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>© <span id="currentYear">2024</span> سكرو. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Star rating functionality
+        const stars = document.querySelectorAll('#starRating span');
+        const ratingInput = document.getElementById('feedbackRating');
+        const ratingText = document.getElementById('ratingText');
+        let selectedRating = 5;
+
+        const ratingLabels = {
+            1: 'سيء جداً 😢',
+            2: 'سيء 😕',
+            3: 'عادي 😐',
+            4: 'جيد 😊',
+            5: 'ممتاز 🎉'
+        };
+
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = this.getAttribute('data-rating');
+                ratingInput.value = selectedRating;
+                ratingText.textContent = ratingLabels[selectedRating];
+                updateStars();
+            });
+
+            star.addEventListener('mouseenter', function() {
+                const hoverRating = this.getAttribute('data-rating');
+                highlightStars(hoverRating);
+                ratingText.textContent = ratingLabels[hoverRating];
+            });
+        });
+
+        document.getElementById('starRating').addEventListener('mouseleave', function() {
+            updateStars();
+            ratingText.textContent = ratingLabels[selectedRating];
+        });
+
+        function updateStars() {
+            stars.forEach((star, index) => {
+                if (index < selectedRating) {
+                    star.style.opacity = '1';
+                    star.style.filter = 'none';
+                    star.style.transform = 'scale(1.1)';
+                } else {
+                    star.style.opacity = '0.3';
+                    star.style.filter = 'grayscale(100%)';
+                    star.style.transform = 'scale(1)';
+                }
+            });
+        }
+
+        function highlightStars(rating) {
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.style.opacity = '1';
+                    star.style.filter = 'none';
+                    star.style.transform = 'scale(1.1)';
+                } else {
+                    star.style.opacity = '0.3';
+                    star.style.filter = 'grayscale(100%)';
+                    star.style.transform = 'scale(1)';
+                }
+            });
+        }
+
+        updateStars(); // Initialize
+
+        // Feedback form submission
+        document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('feedbackName').value.trim() || 'مجهول';
+            const feedback = document.getElementById('feedbackText').value.trim();
+            const rating = selectedRating;
+            const type = document.getElementById('feedbackType').value;
+            const messageDiv = document.getElementById('feedbackMessage');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+
+            if (!feedback) {
+                showMessage('⚠️ الرجاء كتابة رأيك', 'warning');
+                return;
+            }
+
+            if (feedback.length > 1000) {
+                showMessage('⚠️ النص طويل جداً (الحد الأقصى 1000 حرف)', 'warning');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'جاري الإرسال... ⏳';
+            submitBtn.style.opacity = '0.6';
+
+            try {
+                const response = await fetch('/api/feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, feedback, rating, type })
+                });
+
+                const result = await response.json();
+
+                if (result.ok) {
+                    showMessage('✅ ' + result.message, 'success');
+                    document.getElementById('feedbackForm').reset();
+                    selectedRating = 5;
+                    updateStars();
+                    ratingText.textContent = ratingLabels[5];
+                    
+                    // Confetti effect (optional)
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    showMessage('❌ ' + (result.error || 'حدث خطأ'), 'error');
+                }
+            } catch (error) {
+                showMessage('❌ خطأ في الاتصال. تأكد من اتصالك بالإنترنت', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'إرسال الرأي 🚀';
+                submitBtn.style.opacity = '1';
+            }
+        });
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('feedbackMessage');
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+            
+            const colors = {
+                success: '#57f287',
+                warning: '#fee75c',
+                error: '#ed4245'
+            };
+            
+            messageDiv.style.backgroundColor = colors[type] || colors.success;
+            messageDiv.style.color = type === 'warning' ? '#000' : '#fff';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

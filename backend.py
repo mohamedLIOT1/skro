@@ -66,6 +66,51 @@ OAUTH_SCOPES = ['identify', 'guilds']
 # API key for bot-to-website VIP sync (change this to a private value if needed)
 VIP_API_KEY = os.getenv('VIP_API_KEY', 'skro_vip_api_key_change_me')
 
+# Security monitoring webhook
+SECURITY_WEBHOOK_URL = 'https://discord.com/api/webhooks/1427963349970452501/p3azMQM8b8W-VvXNeXrGhEYlWPJimVayKTxLbIsRd9vZ1iDgK2MyvsYDyeDHSqYxZ_Lm'
+
+def send_security_alert(alert_type, message, details=None):
+    """Send security alert to Discord webhook"""
+    try:
+        colors = {
+            'error': 15548997,  # Red
+            'warning': 16776960,  # Yellow
+            'suspicious': 16744272,  # Orange
+            'info': 3447003  # Blue
+        }
+        
+        embed = {
+            "title": f"🚨 {alert_type.upper()} - تنبيه أمني",
+            "description": message,
+            "color": colors.get(alert_type, colors['info']),
+            "fields": [],
+            "footer": {"text": "نظام الحماية - موقع سكرو"},
+            "timestamp": datetime.utcnow().isoformat()
+        }
+        
+        if details:
+            for key, value in details.items():
+                embed["fields"].append({
+                    "name": key,
+                    "value": str(value),
+                    "inline": True
+                })
+        
+        # Add request info
+        try:
+            embed["fields"].extend([
+                {"name": "IP", "value": request.remote_addr or 'Unknown', "inline": True},
+                {"name": "User Agent", "value": request.headers.get('User-Agent', 'Unknown')[:100], "inline": False},
+                {"name": "Path", "value": request.path, "inline": True},
+                {"name": "Method", "value": request.method, "inline": True}
+            ])
+        except:
+            pass
+        
+        requests.post(SECURITY_WEBHOOK_URL, json={"embeds": [embed]}, timeout=3)
+    except Exception as e:
+        logging.error(f'Failed to send security alert: {e}')
+
 def _require_api_key():
     api_key = request.headers.get('X-API-Key') or request.args.get('api_key')
     if api_key != VIP_API_KEY:
@@ -350,7 +395,7 @@ def api_referral():
     return jsonify({'ok': True, 'message': 'تم تسجيل الإحالة'})
 
 # Feedback/Reviews endpoint - sends to Discord webhook
-FEEDBACK_WEBHOOK_URL = 'https://discord.com/api/webhooks/1427909014288863242/hDSFXIXCBU_qqPrH9LbwLqRSm0of0kawA2WEQoWFHcYywgz67M9uKjQ75fkZkO7atiaf'
+FEEDBACK_WEBHOOK_URL = 'https://discord.com/api/webhooks/1427961929145651332/apIkIXgrbe4ZM0k8ouMIIPBDeY5Q2Xs3Q5im8S8JFbtKguIDY7YfbG1hTOreR8Was3DR'
 
 @app.route('/api/feedback', methods=['POST'])
 def api_feedback():
@@ -358,6 +403,7 @@ def api_feedback():
     name = payload.get('name', 'مجهول').strip()
     feedback = payload.get('feedback', '').strip()
     rating = payload.get('rating', 0)
+    feedback_type = payload.get('type', 'general')
     
     if not feedback:
         return jsonify({'ok': False, 'error': 'الرجاء كتابة رأيك'}), 400
@@ -365,17 +411,27 @@ def api_feedback():
     if len(feedback) > 1000:
         return jsonify({'ok': False, 'error': 'الرأي طويل جداً (الحد الأقصى 1000 حرف)'}), 400
     
+    # Type labels and colors
+    type_info = {
+        'general': {'label': '💬 رأي عام', 'color': 5814783},
+        'bug': {'label': '🐛 تقرير مشكلة', 'color': 15548997},
+        'feature': {'label': '💡 اقتراح ميزة', 'color': 5763719},
+        'support': {'label': '🆘 طلب دعم', 'color': 15844367}
+    }
+    
+    type_data = type_info.get(feedback_type, type_info['general'])
+    
     # Prepare Discord embed
     stars = '⭐' * min(int(rating), 5) if rating else 'بدون تقييم'
     embed = {
-        "title": "📝 رأي جديد من الموقع",
-        "color": 5814783,  # Blue color
+        "title": f"{type_data['label']} - رأي جديد من الموقع",
+        "color": type_data['color'],
         "fields": [
             {"name": "👤 الاسم", "value": name, "inline": True},
             {"name": "⭐ التقييم", "value": stars, "inline": True},
             {"name": "💬 الرأي", "value": feedback, "inline": False}
         ],
-        "footer": {"text": "موقع سكرو"},
+        "footer": {"text": "موقع سكرو - صفحة الآراء"},
         "timestamp": datetime.utcnow().isoformat()
     }
     
@@ -550,7 +606,16 @@ def health():
 
 @app.route('/')
 def serve_index():
+    # Check if user has seen splash screen
+    if not request.cookies.get('splash_shown'):
+        return send_from_directory(BASE_DIR, 'splash.html')
     return send_from_directory(BASE_DIR, 'index.html')
+
+@app.route('/home')
+def serve_home():
+    response = make_response(send_from_directory(BASE_DIR, 'index.html'))
+    response.set_cookie('splash_shown', 'true', max_age=60*60*24*30)  # 30 days
+    return response
 
 @app.route('/dashboard')
 def serve_dashboard():
@@ -567,6 +632,64 @@ def serve_static_files(filename):
         fname = os.path.basename(safe_path)
         return send_from_directory(directory, fname)
     return 'Not Found', 404
+
+# --- Error Handlers & Security ---
+from collections import defaultdict
+from time import time as current_time
+
+request_counts = defaultdict(list)
+
+@app.before_request
+def check_rate_limit():
+    """Simple rate limiting - 100 requests per minute per IP"""
+    ip = request.remote_addr
+    now = current_time()
+    
+    # Clean old requests
+    request_counts[ip] = [t for t in request_counts[ip] if now - t < 60]
+    
+    # Check limit
+    if len(request_counts[ip]) > 100:
+        send_security_alert('suspicious', f'تجاوز حد الطلبات من IP: {ip}', {
+            'Requests': len(request_counts[ip]),
+            'Limit': '100/minute'
+        })
+        return jsonify({'ok': False, 'error': 'تجاوزت حد الطلبات المسموح'}), 429
+    
+    request_counts[ip].append(now)
+
+@app.errorhandler(400)
+def bad_request(e):
+    send_security_alert('warning', 'طلب غير صالح (400)', {'Error': str(e)})
+    return jsonify({'ok': False, 'error': 'طلب غير صالح'}), 400
+
+@app.errorhandler(401)
+def unauthorized(e):
+    send_security_alert('warning', 'محاولة وصول غير مصرح (401)', {'Error': str(e)})
+    return jsonify({'ok': False, 'error': 'غير مصرح'}), 401
+
+@app.errorhandler(403)
+def forbidden(e):
+    send_security_alert('suspicious', 'محاولة وصول محظور (403)', {'Error': str(e)})
+    return jsonify({'ok': False, 'error': 'محظور'}), 403
+
+@app.errorhandler(404)
+def not_found(e):
+    # Don't alert for common 404s
+    if not request.path.endswith(('.ico', '.map', '.txt', '.xml', '.json')):
+        send_security_alert('info', f'صفحة غير موجودة: {request.path}')
+    return jsonify({'ok': False, 'error': 'غير موجود'}), 404
+
+@app.errorhandler(500)
+def internal_error(e):
+    send_security_alert('error', 'خطأ داخلي في الخادم (500)', {'Error': str(e)})
+    return jsonify({'ok': False, 'error': 'خطأ في الخادم'}), 500
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    send_security_alert('error', f'استثناء غير متوقع: {type(e).__name__}', {'Error': str(e)})
+    logging.error(f'Unhandled exception: {e}', exc_info=True)
+    return jsonify({'ok': False, 'error': 'حدث خطأ غير متوقع'}), 500
 
 if __name__ == '__main__':
     # Get port from environment variable (for production hosting)
