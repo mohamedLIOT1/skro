@@ -30,6 +30,7 @@ dist/
 build/
 *.tgz
 *.tar.gz
+*.zip
 
 # Environment files
 .env
