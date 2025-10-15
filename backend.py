@@ -14,8 +14,8 @@ load_dotenv()  # Load .env if exists
 
 
 app = Flask(__name__)
-# Use SECRET_KEY from environment (important for Railway deployment)
-app.secret_key = os.getenv('SECRET_KEY') or os.getenv('WEB_SECRET_KEY', 'dev-secret-change-in-production')
+# Use hardcoded SECRET_KEY (defined below in the Discord config section)
+# This will be set after imports
 app.permanent_session_lifetime = timedelta(days=7)
 
 # --- Cookie settings for custom domain/HTTPS ---
@@ -42,14 +42,18 @@ REFERRALS_FILE = os.path.join(DATA_DIR, 'referrals.json')
 # Create data directory if it doesn't exist
 os.makedirs(DATA_DIR, exist_ok=True)
 
-# Discord OAuth Config (env vars)
-DISCORD_CLIENT_ID = os.getenv('DISCORD_CLIENT_ID')
-DISCORD_CLIENT_SECRET = os.getenv('DISCORD_CLIENT_SECRET')
-DISCORD_REDIRECT_URI = os.getenv('DISCORD_REDIRECT_URI', 'http://localhost:5000/auth/discord/callback')
+# Discord OAuth Config - Direct values (no env vars needed)
+DISCORD_CLIENT_ID = '1424342801801416834'
+DISCORD_CLIENT_SECRET = '0Wz9RdaBDLXIRkeacKL99kAwrOBHfteS'
+DISCORD_REDIRECT_URI = 'https://www.skrew.ct.ws/callback'
 
-# Debug: Print loaded env values (remove this in production)
-print(f"🔑 CLIENT_ID loaded: {DISCORD_CLIENT_ID}")
-print(f"🔐 CLIENT_SECRET loaded: {'***' + (DISCORD_CLIENT_SECRET[-4:] if DISCORD_CLIENT_SECRET else 'None')}")
+# Secret key for Flask sessions
+SECRET_KEY_VALUE = '492bf62f7c5918057247d2a810c7644d3da99a01b59d49527566219cf296c8c4'
+app.secret_key = SECRET_KEY_VALUE  # Set the secret key here
+
+# Debug: Print loaded values
+print(f"🔑 CLIENT_ID: {DISCORD_CLIENT_ID}")
+print(f"🔐 CLIENT_SECRET: ***{DISCORD_CLIENT_SECRET[-4:]}")
 print(f"🔗 REDIRECT_URI: {DISCORD_REDIRECT_URI}")
 DISCORD_OAUTH_BASE = 'https://discord.com/api/oauth2'
 DISCORD_API_BASE = 'https://discord.com/api'
