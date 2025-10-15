@@ -307,11 +307,10 @@ def api_leaderboard():
                 # Prefer global_name, then username, fallback to user_id
                 username = user_info.get('username') or f'User {user_id}'
                 avatar = user_info.get('avatar')
-                # Always use Discord avatar link if avatar exists
-                if avatar:
+                # Check for valid avatar (not None, not empty, not 'None', not 'null')
+                if avatar and str(avatar).lower() not in ['none', 'null', '']:
                     avatar_url = f"https://cdn.discordapp.com/avatars/{user_id}/{avatar}.png?size=128"
                 else:
-                    # Use Discord default avatar
                     try:
                         avatar_url = f"https://cdn.discordapp.com/embed/avatars/{int(user_id) % 5}.png"
                     except Exception:
