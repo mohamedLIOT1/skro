@@ -53,6 +53,22 @@
             color: #b3b3b3;
         }
 
+        body.night-mode .progress-header,
+        body.night-mode .progress-header span {
+            color: #ffffff !important;
+            font-weight: 500;
+        }
+
+        body.night-mode .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        body.night-mode .progress-fill {
+            background: linear-gradient(90deg, #00d4ff, #00f2ff, #00d4ff);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
         /* Stars Animation */
         .stars-container {
             position: fixed;
