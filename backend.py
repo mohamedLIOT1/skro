@@ -319,6 +319,7 @@ def api_leaderboard():
                         if bot_token:
                             headers['Authorization'] = f'Bot {bot_token}'
                         resp = requests.get(discord_api_url, headers=headers, timeout=2)
+                        logging.info(f"[LEADERBOARD] Discord API fetch user {user_id} | Status: {resp.status_code} | Response: {resp.text}")
                         if resp.status_code == 200:
                             discord_user = resp.json()
                             username = discord_user.get('global_name') or discord_user.get('username') or f'User {user_id}'
@@ -326,9 +327,20 @@ def api_leaderboard():
                             user_info['username'] = username
                             users_data[user_id] = user_info
                             save_json(USERS_FILE, users_data)
-                        else:
+                        elif resp.status_code == 401:
+                            logging.error(f"[LEADERBOARD] Discord API Unauthorized (401): تحقق من توكن البوت وصلاحياته!")
                             username = f'User {user_id}'
-                    except Exception:
+                        elif resp.status_code == 403:
+                            logging.error(f"[LEADERBOARD] Discord API Forbidden (403): البوت ليس في نفس السيرفر أو لا يملك صلاحية View Members!")
+                            username = f'User {user_id}'
+                        elif resp.status_code == 404:
+                            logging.error(f"[LEADERBOARD] Discord API Not Found (404): user_id غير صحيح أو المستخدم غير متاح.")
+                            username = f'User {user_id}'
+                        else:
+                            logging.error(f"[LEADERBOARD] Discord API Error {resp.status_code}: {resp.text}")
+                            username = f'User {user_id}'
+                    except Exception as ex:
+                        logging.error(f"[LEADERBOARD] Exception fetching Discord user {user_id}: {ex}")
                         username = f'User {user_id}'
                 avatar = user_info.get('avatar')
                 avatar_url = None
