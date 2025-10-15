@@ -844,6 +844,138 @@
             color: #999;
         }
 
+        /* Shop Section Styles */
+        .shop-section {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .shop-item {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .shop-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .shop-item-image {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: white;
+            padding: 0.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .shop-item-info {
+            flex: 1;
+        }
+
+        .shop-item-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .shop-item-description {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .shop-item-price {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .price-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .shop-item-status {
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .shop-buy-btn {
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .shop-buy-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .shop-buy-btn.purchased {
+            background: #48bb78;
+            cursor: default;
+        }
+
+        /* Night Mode for Shop */
+        body.night-mode .shop-section {
+            background: rgba(36, 36, 62, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.night-mode .shop-item {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        body.night-mode .shop-item-title {
+            color: #e8e8e8;
+        }
+
+        body.night-mode .shop-item-description {
+            color: #b3b3b3;
+        }
+
+        /* Responsive Shop */
+        @media (max-width: 768px) {
+            .shop-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .shop-item-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .shop-buy-btn {
+                width: 100%;
+            }
+        }
+
         /* Night Mode for Leaderboard */
         body.night-mode .leaderboard-section {
             background: rgba(36, 36, 62, 0.6);
@@ -1086,6 +1218,31 @@
                     <div class="progress-bar">
                         <div class="progress-fill" id="license-progress" style="width: 0%"></div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Shop Section - سكرووو صاحب صحبه -->
+            <div class="shop-section">
+                <h3 style="margin-bottom: 1.5rem; color: #333;">🛒 المتجر</h3>
+                
+                <div class="shop-item">
+                    <img src="skrou.png" alt="سكرووو صاحب صحبه" class="shop-item-image">
+                    <div class="shop-item-info">
+                        <h4 class="shop-item-title">🎮 سكرووو صاحب صحبه</h4>
+                        <p class="shop-item-description">
+                            قدر تلعب مع صحابك في وضع صاحب صحبه الممتع! ادعي أصدقائك واربح نقاط إضافية.
+                        </p>
+                        <div class="shop-item-price">
+                            <span class="price-label">السعر:</span>
+                            <span class="price-value">50 💎 كريدت</span>
+                        </div>
+                        <div class="shop-item-status" id="shop-status">
+                            <span id="credits-available">لديك: 0 💎</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary shop-buy-btn" id="buy-friend-mode" onclick="purchaseFriendMode()">
+                        شراء الآن
+                    </button>
                 </div>
             </div>
 
@@ -1345,6 +1502,9 @@
             // Progress bars
             updateProgressBars(stats);
 
+            // Update shop status
+            updateShopStatus(stats);
+
             // Show logout button
             document.getElementById('logout-btn').style.display = 'inline-block';
         }
@@ -1364,10 +1524,83 @@
 
             // Update purchase button
             const buyBtn = document.getElementById('buy-premium-btn');
-            if (stats.credits >= 50) {
+            if (buyBtn && stats.credits >= 50) {
                 buyBtn.textContent = 'مفعل ✓';
                 buyBtn.disabled = true;
                 buyBtn.style.background = '#28a745';
+            }
+        }
+
+        function updateShopStatus(stats) {
+            // Update credits display
+            document.getElementById('credits-available').textContent = `لديك: ${stats.credits.toFixed(1)} 💎`;
+            
+            // Check if friend mode already purchased
+            checkFriendModePurchase();
+        }
+
+        async function checkFriendModePurchase() {
+            if (!userData) return;
+            
+            try {
+                const response = await fetch(`/api/user/${userData.id}/friend-mode`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const buyBtn = document.getElementById('buy-friend-mode');
+                    
+                    if (data.purchased) {
+                        buyBtn.textContent = 'مفعل ✓';
+                        buyBtn.disabled = true;
+                        buyBtn.classList.add('purchased');
+                    } else if (userStats.credits < 50) {
+                        buyBtn.textContent = `يحتاج ${(50 - userStats.credits).toFixed(1)} 💎 إضافية`;
+                        buyBtn.disabled = true;
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking friend mode purchase:', error);
+            }
+        }
+
+        async function purchaseFriendMode() {
+            if (!userData || !userStats) return;
+            
+            if (userStats.credits < 50) {
+                showModal(`⚠️ رصيد غير كافي!<br><br>تحتاج إلى <b>50 كريدت</b> لشراء وضع صاحب صحبه<br>لديك حالياً: <b>${userStats.credits.toFixed(1)} كريدت</b><br><br>احصل على المزيد من الكريدتس بلعب اللعبة!`, 'error');
+                return;
+            }
+            
+            if (confirm('هل أنت متأكد من شراء وضع "سكرووو صاحب صحبه" مقابل 50 كريدت؟')) {
+                try {
+                    const response = await fetch(`/api/user/${userData.id}/purchase-friend-mode`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        showModal('🎉 تم الشراء بنجاح!<br><br>تم تفعيل وضع <b>سكرووو صاحب صحبه</b><br>يمكنك الآن استخدامه مع أصدقائك!', 'success');
+                        
+                        // Update user stats
+                        userStats.credits = data.new_credits;
+                        document.getElementById('total-credits').textContent = userStats.credits.toFixed(2);
+                        updateShopStatus(userStats);
+                        
+                        // Update button
+                        const buyBtn = document.getElementById('buy-friend-mode');
+                        buyBtn.textContent = 'مفعل ✓';
+                        buyBtn.disabled = true;
+                        buyBtn.classList.add('purchased');
+                    } else {
+                        const error = await response.json();
+                        showModal('❌ فشل الشراء: ' + (error.error || 'خطأ غير معروف'), 'error');
+                    }
+                } catch (error) {
+                    console.error('Error purchasing friend mode:', error);
+                    showModal('❌ خطأ في الاتصال بالخادم', 'error');
+                }
             }
         }
 

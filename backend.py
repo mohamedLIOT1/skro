@@ -255,6 +255,74 @@ def api_purchase_license(user_id: int):
     # NOTE: هنا المفروض ننقص النقاط فعلياً ونخزن عملية الشراء في قاعدة بيانات حقيقية
     return jsonify({'ok': True, 'message': 'تم منح الترخيص مؤقتاً (محاكاة)', 'product': target})
 
+# Friend Mode Purchase endpoints
+FRIEND_MODE_FILE = os.path.join(DATA_DIR, 'friend_mode_purchases.json')
+
+@app.route('/api/user/<int:user_id>/friend-mode')
+def api_check_friend_mode(user_id: int):
+    """Check if user has purchased friend mode"""
+    purchases = load_json(FRIEND_MODE_FILE, {})
+    purchased = str(user_id) in purchases
+    purchase_date = purchases.get(str(user_id), {}).get('date') if purchased else None
+    return jsonify({
+        'user_id': user_id,
+        'purchased': purchased,
+        'purchase_date': purchase_date
+    })
+
+@app.route('/api/user/<int:user_id>/purchase-friend-mode', methods=['POST'])
+def api_purchase_friend_mode(user_id: int):
+    """Purchase friend mode (سكرووو صاحب صحبه)"""
+    # Check current credits
+    user_points_resp = api_user_points(user_id)
+    data = user_points_resp.json
+    credits = data['stats']['credits']
+    
+    if credits < 50:
+        return jsonify({'ok': False, 'error': 'رصيد غير كافي. تحتاج إلى 50 كريدت.'}), 400
+    
+    # Check if already purchased
+    purchases = load_json(FRIEND_MODE_FILE, {})
+    if str(user_id) in purchases:
+        return jsonify({'ok': False, 'error': 'لقد قمت بشراء هذا المنتج مسبقاً'}), 400
+    
+    # Deduct credits from all guilds
+    points_data = load_json(POINTS_FILE, {})
+    total_deducted = 0
+    credits_to_deduct = 50.0
+    
+    for guild_id, guild_data in points_data.items():
+        if str(user_id) in guild_data:
+            user_entry = guild_data[str(user_id)]
+            user_credits = user_entry.get('points', 0) / 10.0  # 10 points = 1 credit
+            
+            if user_credits > 0:
+                deduct_amount = min(user_credits, credits_to_deduct - total_deducted)
+                points_to_deduct = int(deduct_amount * 10)
+                user_entry['points'] = max(0, user_entry['points'] - points_to_deduct)
+                total_deducted += deduct_amount
+                
+                if total_deducted >= credits_to_deduct:
+                    break
+    
+    save_json(POINTS_FILE, points_data)
+    
+    # Record purchase
+    purchases[str(user_id)] = {
+        'date': datetime.utcnow().isoformat(),
+        'credits_spent': 50
+    }
+    save_json(FRIEND_MODE_FILE, purchases)
+    
+    # Log purchase
+    logging.info(f"User {user_id} purchased Friend Mode for 50 credits")
+    
+    return jsonify({
+        'ok': True,
+        'message': 'تم شراء وضع صاحب صحبه بنجاح',
+        'new_credits': credits - 50
+    })
+
 # Owner check endpoint
 @app.route('/api/owner-check/<int:user_id>')
 def api_owner_check(user_id: int):
