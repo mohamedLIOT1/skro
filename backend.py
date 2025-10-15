@@ -46,7 +46,7 @@ os.makedirs(DATA_DIR, exist_ok=True)
 # Discord OAuth Config - Direct values (no env vars needed)
 DISCORD_CLIENT_ID = '1424342801801416834'
 DISCORD_CLIENT_SECRET = '0Wz9RdaBDLXIRkeacKL99kAwrOBHfteS'
-DISCORD_REDIRECT_URI = 'https://www.skrew.ct.ws/callback'
+DISCORD_REDIRECT_URI = 'https://www.skrew.ct.ws/auth/discord/callback'
 
 # Secret key for Flask sessions
 SECRET_KEY_VALUE = '492bf62f7c5918057247d2a810c7644d3da99a01b59d49527566219cf296c8c4'
