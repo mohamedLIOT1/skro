@@ -295,7 +295,11 @@ def api_leaderboard():
     """Get top players by points, wins, and games"""
     try:
         points_data = load_json(POINTS_FILE, {})
-        users_data = load_json(USERS_FILE, {})
+        # إذا لم يوجد ملف users.json، استخدم dict فارغ
+        try:
+            users_data = load_json(USERS_FILE, {})
+        except Exception:
+            users_data = {}
         
         # Aggregate all players data
         all_players = []
@@ -304,8 +308,28 @@ def api_leaderboard():
             for user_id, stats in guild_data.items():
                 # Try to get user info
                 user_info = users_data.get(user_id, {})
-                # Prefer global_name, then username, fallback to user_id
-                username = user_info.get('username') or f'User {user_id}'
+                # Prefer global_name, then username, fallback: جلب من Discord API إذا لم يوجد
+                username = user_info.get('username')
+                if not username:
+                    # جلب اسم المستخدم من Discord API
+                    try:
+                        discord_api_url = f"https://discord.com/api/users/{user_id}"
+                        headers = {}
+                        bot_token = os.environ.get('DISCORD_BOT_TOKEN')
+                        if bot_token:
+                            headers['Authorization'] = f'Bot {bot_token}'
+                        resp = requests.get(discord_api_url, headers=headers, timeout=2)
+                        if resp.status_code == 200:
+                            discord_user = resp.json()
+                            username = discord_user.get('global_name') or discord_user.get('username') or f'User {user_id}'
+                            # حفظ الاسم في users.json
+                            user_info['username'] = username
+                            users_data[user_id] = user_info
+                            save_json(USERS_FILE, users_data)
+                        else:
+                            username = f'User {user_id}'
+                    except Exception:
+                        username = f'User {user_id}'
                 avatar = user_info.get('avatar')
                 avatar_url = None
                 # Check for valid avatar (not None, not empty, not 'None', not 'null')
