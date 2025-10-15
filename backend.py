@@ -3,11 +3,12 @@ import json
 import time
 import secrets
 import logging
+import jwt
 from dotenv import load_dotenv
 from urllib.parse import urlencode
 import requests
 from flask import Flask, jsonify, session, redirect, request, url_for, make_response, send_from_directory
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 load_dotenv()  # Load .env if exists
 
@@ -60,7 +61,43 @@ DISCORD_API_BASE = 'https://discord.com/api'
 
 OAUTH_SCOPES = ['identify', 'guilds']
 
-# --- Helpers ---
+# --- JWT Helpers ---
+
+def create_jwt_token(user_data):
+    """Create JWT token with user data"""
+    payload = {
+        'user': user_data,
+        'exp': datetime.utcnow() + timedelta(days=7),
+        'iat': datetime.utcnow()
+    }
+    token = jwt.encode(payload, SECRET_KEY_VALUE, algorithm='HS256')
+    return token
+
+def verify_jwt_token(token):
+    """Verify and decode JWT token"""
+    try:
+        payload = jwt.decode(token, SECRET_KEY_VALUE, algorithms=['HS256'])
+        return payload.get('user')
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidTokenError:
+        return None
+
+def get_user_from_request():
+    """Get user from JWT token in cookie or header"""
+    # Try cookie first
+    token = request.cookies.get('auth_token')
+    # Try Authorization header as fallback
+    if not token:
+        auth_header = request.headers.get('Authorization')
+        if auth_header and auth_header.startswith('Bearer '):
+            token = auth_header.split(' ')[1]
+    
+    if token:
+        return verify_jwt_token(token)
+    return None
+
+# --- JSON Helpers ---
 
 def load_json(path, default):
     try:
@@ -233,24 +270,30 @@ def discord_callback():
         
         user = user_resp.json()
         
-        # Store user info in session with all flags
-        session.clear()
-        session.permanent = True
-        session['user'] = {
+        # Create user data for JWT
+        user_data = {
             'id': user.get('id'),
             'username': user.get('username'),
             'global_name': user.get('global_name'),
             'avatar': user.get('avatar')
         }
-        session['access_token'] = access_token
-        session['logged_in'] = True
-        session.modified = True
+        
+        # Create JWT token
+        jwt_token = create_jwt_token(user_data)
         
         logging.info(f'User {user.get("username")} logged in successfully')
         
-        # Create response with explicit cookie for backup
+        # Create response and set JWT token in cookie
         response = make_response(redirect('/dashboard'))
-        response.set_cookie('user_logged_in', 'true', max_age=60*60*24*7, secure=True, httponly=False, samesite='Lax')
+        response.set_cookie(
+            'auth_token', 
+            jwt_token, 
+            max_age=60*60*24*7,  # 7 days
+            secure=False,  # Set to False for debugging (change to True in production with HTTPS)
+            httponly=False,  # Allow JS access
+            samesite='Lax',
+            path='/'
+        )
         return response
         
     except Exception as e:
@@ -264,7 +307,7 @@ def auth_logout():
 
 @app.route('/api/auth/me')
 def auth_me():
-    user = session.get('user')
+    user = get_user_from_request()
     if not user:
         return jsonify({'authenticated': False})
     return jsonify({'authenticated': True, 'user': user})
