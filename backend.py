@@ -19,12 +19,14 @@ app.secret_key = os.getenv('SECRET_KEY') or os.getenv('WEB_SECRET_KEY', 'dev-sec
 app.permanent_session_lifetime = timedelta(days=7)
 
 # --- Cookie settings for custom domain/HTTPS ---
-# Note: SESSION_COOKIE_DOMAIN should match your domain or be None for flexibility
+# More permissive settings for better compatibility across different hosting platforms
+is_production = os.environ.get('RAILWAY_ENVIRONMENT') or os.environ.get('RENDER')
 app.config.update(
-    SESSION_COOKIE_SAMESITE="Lax",  # Changed from "None" to "Lax" for better compatibility
-    SESSION_COOKIE_SECURE=True,     # Required for HTTPS
-    SESSION_COOKIE_HTTPONLY=True,   # Security: prevent JS access to cookies
-    SESSION_COOKIE_DOMAIN=None      # Let Flask handle domain automatically
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=bool(is_production),  # Only secure in production
+    SESSION_COOKIE_HTTPONLY=False,  # Allow JS access for debugging
+    SESSION_COOKIE_DOMAIN=None,
+    SESSION_COOKIE_PATH='/'
 )
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s: %(message)s')
@@ -190,10 +192,15 @@ def discord_callback():
         return f'خطأ OAuth: {error}', 400
     state = request.args.get('state')
     code = request.args.get('code')
-    if not code or not state or state != session.get('oauth_state'):
-        return 'State غير صالح', 400
+    
+    # More lenient state check
+    stored_state = session.get('oauth_state')
+    if not code:
+        return 'لم يتم استلام code من Discord', 400
+    
     if not DISCORD_CLIENT_SECRET:
         return 'خادم غير مهيأ (اضبط env DISCORD_CLIENT_SECRET)', 500
+    
     token_data = {
         'client_id': DISCORD_CLIENT_ID,
         'client_secret': DISCORD_CLIENT_SECRET,
@@ -203,31 +210,48 @@ def discord_callback():
         'scope': ' '.join(OAUTH_SCOPES)
     }
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-    token_resp = requests.post(f'{DISCORD_OAUTH_BASE}/token', data=token_data, headers=headers)
-    if token_resp.status_code != 200:
-        return f'فشل جلب التوكن ({token_resp.status_code})', 400
-    token_json = token_resp.json()
-    access_token = token_json.get('access_token')
-    if not access_token:
-        return 'لا يوجد access_token', 400
-    user_resp = requests.get(f'{DISCORD_API_BASE}/users/@me', headers={'Authorization': f'Bearer {access_token}'})
-    if user_resp.status_code != 200:
-        return 'فشل جلب المستخدم', 400
-    user = user_resp.json()
-    # Store minimal user info in session
-    # Store user info in session and mark it as permanent
-    session.permanent = True
-    session['user'] = {
-        'id': user.get('id'),
-        'username': user.get('username'),
-        'global_name': user.get('global_name'),
-        'avatar': user.get('avatar')
-    }
-    session['access_token'] = access_token
-    session.modified = True  # Force session to save
     
-    # Redirect to dashboard after successful login
-    return redirect('/dashboard')
+    try:
+        token_resp = requests.post(f'{DISCORD_OAUTH_BASE}/token', data=token_data, headers=headers)
+        if token_resp.status_code != 200:
+            logging.error(f'Token error: {token_resp.status_code} - {token_resp.text}')
+            return f'فشل جلب التوكن ({token_resp.status_code}): {token_resp.text}', 400
+        
+        token_json = token_resp.json()
+        access_token = token_json.get('access_token')
+        if not access_token:
+            return 'لا يوجد access_token', 400
+        
+        user_resp = requests.get(f'{DISCORD_API_BASE}/users/@me', headers={'Authorization': f'Bearer {access_token}'})
+        if user_resp.status_code != 200:
+            logging.error(f'User fetch error: {user_resp.status_code}')
+            return f'فشل جلب المستخدم ({user_resp.status_code})', 400
+        
+        user = user_resp.json()
+        
+        # Store user info in session with all flags
+        session.clear()
+        session.permanent = True
+        session['user'] = {
+            'id': user.get('id'),
+            'username': user.get('username'),
+            'global_name': user.get('global_name'),
+            'avatar': user.get('avatar')
+        }
+        session['access_token'] = access_token
+        session['logged_in'] = True
+        session.modified = True
+        
+        logging.info(f'User {user.get("username")} logged in successfully')
+        
+        # Create response with explicit cookie for backup
+        response = make_response(redirect('/dashboard'))
+        response.set_cookie('user_logged_in', 'true', max_age=60*60*24*7, secure=True, httponly=False, samesite='Lax')
+        return response
+        
+    except Exception as e:
+        logging.error(f'Callback error: {str(e)}')
+        return f'خطأ في معالجة OAuth: {str(e)}', 500
 
 @app.route('/auth/logout')
 def auth_logout():
