@@ -1,11 +1,4 @@
-@app.route('/invite')
-def invite_referral():
-    ref = request.args.get('ref')
-    if ref and ref.isdigit():
-        session['referral_inviter'] = str(ref)
-        session.modified = True
-    # Redirect to login (or homepage)
-    return redirect('/auth/discord/login')
+
 import os
 import json
 import time
