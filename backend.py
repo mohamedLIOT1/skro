@@ -745,6 +745,21 @@ def serve_home():
 def serve_dashboard():
     return send_from_directory(BASE_DIR, 'dashboard.html')
 
+@app.route('/invite')
+def invite():
+    """Handle referral invitation links"""
+    ref = request.args.get('ref')
+    if not ref:
+        # No referral code, redirect to home
+        return redirect(url_for('serve_index'))
+    
+    # Store referral code in session for tracking when user logs in
+    session['referral_from'] = ref
+    session.permanent = True
+    
+    # Redirect to Discord login to complete the referral
+    return redirect(url_for('discord_login'))
+
 @app.route('/<path:filename>')
 def serve_static_files(filename):
     # Serve files (css, js, images). Security: prevent directory traversal.
