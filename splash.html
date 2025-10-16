@@ -2,7 +2,9 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>سكرو - البوت الرسمي للديسكورد</title>
     <link rel="icon" href="assets/favicon.png" type="image/png">
     <style>
@@ -16,11 +18,18 @@
             font-family: 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #0b0f1a 0%, #1a1f2e 100%);
             min-height: 100vh;
+            min-height: -webkit-fill-available; /* Fix for iOS Safari */
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             position: relative;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        html {
+            height: -webkit-fill-available;
         }
 
         /* Animated background */
@@ -302,6 +311,35 @@
                 font-size: 0.9rem;
             }
         }
+        
+        /* iPhone 15 Plus and similar large iPhones */
+        @media only screen 
+        and (min-device-width: 390px) 
+        and (max-device-width: 430px) 
+        and (-webkit-min-device-pixel-ratio: 3) {
+            body {
+                padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            }
+            
+            .splash-container {
+                padding: 2rem 1rem;
+                max-width: 100%;
+            }
+            
+            .logo {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .message {
+                font-size: 1.4rem;
+            }
+            
+            .enter-btn {
+                padding: 14px 35px;
+                font-size: 1.05rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -340,11 +378,7 @@
     </div>
 
     <script>
-        // Auto redirect after 3 seconds
-        setTimeout(() => {
-            enterSite();
-        }, 3000);
-
+        // إزالة التحويل التلقائي - المستخدم لازم يدوس على الزرار
         function enterSite() {
             // Just redirect to /home - backend will handle session
             window.location.href = '/home';

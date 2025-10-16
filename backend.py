@@ -187,9 +187,10 @@ def api_stats():
         pass
     players_count = len(unique_users)
 
-    # Registered users count
-    users_data = load_json(USERS_FILE, {"users": []})
-    users_registered = len(set(str(u) for u in users_data.get('users', [])))
+    # Registered users count - عدد المستخدمين الفريدين اللي عملوا تسجيل دخول
+    users_data = load_json(USERS_FILE, {})
+    # users.json structure: { "user_id": {"username": "...", "avatar": "...", "last_login": "..."}, ... }
+    users_registered = len(users_data)  # عدد المستخدمين الفريدين
 
     return jsonify({
         'guild_count': guild_count,
@@ -216,10 +217,19 @@ def api_user_points(user_id: int):
             aggregated['games'] += user_entry.get('games', 0)
             aggregated['best'] = max(aggregated['best'], user_entry.get('best', 0))
             aggregated['total_score'] += user_entry.get('total_score', 0)
+    
+    # منع القيم السالبة
+    aggregated['points'] = max(0, aggregated['points'])
+    aggregated['wins'] = max(0, aggregated['wins'])
+    aggregated['games'] = max(0, aggregated['games'])
+    aggregated['best'] = max(0, aggregated['best'])
+    aggregated['total_score'] = max(0, aggregated['total_score'])
+    
     aggregated['average'] = (aggregated['total_score'] / aggregated['games']) if aggregated['games'] else 0
     # credits = تحويل النقاط للعملة (مثال: كل 10 نقاط = 1 كريدت)
     rate = 0.1
-    aggregated['credits'] = round(aggregated['points'] * rate, 2)
+    # تقريب لأقرب عدد صحيح ومنع السالب
+    aggregated['credits'] = max(0, int(aggregated['points'] * rate))
 
     # VIP status
     vip_data = load_json(VIP_FILE, {})
@@ -296,21 +306,21 @@ def api_purchase_friend_mode(user_id: int):
     
     # Deduct credits from all guilds
     points_data = load_json(POINTS_FILE, {})
+    credits_needed = 50  # 50 credits
+    points_needed = credits_needed * 10  # 500 points
     total_deducted = 0
-    credits_to_deduct = 50.0
     
     for guild_id, guild_data in points_data.items():
         if str(user_id) in guild_data:
             user_entry = guild_data[str(user_id)]
-            user_credits = user_entry.get('points', 0) / 10.0  # 10 points = 1 credit
+            current_points = max(0, user_entry.get('points', 0))  # منع السالب
             
-            if user_credits > 0:
-                deduct_amount = min(user_credits, credits_to_deduct - total_deducted)
-                points_to_deduct = int(deduct_amount * 10)
-                user_entry['points'] = max(0, user_entry['points'] - points_to_deduct)
-                total_deducted += deduct_amount
+            if current_points > 0 and total_deducted < points_needed:
+                points_to_deduct = min(current_points, points_needed - total_deducted)
+                user_entry['points'] = max(0, current_points - points_to_deduct)
+                total_deducted += points_to_deduct
                 
-                if total_deducted >= credits_to_deduct:
+                if total_deducted >= points_needed:
                     break
     
     save_json(POINTS_FILE, points_data)
