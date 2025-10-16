@@ -15,8 +15,11 @@ import bleach
 from datetime import timedelta, datetime
 # CSRF protection
 from flask_seasurf import SeaSurf
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 load_dotenv()  # Load .env if exists
+
 
 
 
@@ -32,6 +35,9 @@ csrf = SeaSurf(app)
 
 # تفعيل CORS للأصول الموثوقة فقط
 CORS(app, origins=["https://www.skrew.ct.ws", "http://localhost:5000", "http://127.0.0.1:5000"], supports_credentials=True)
+
+# Rate limiting (brute force protection)
+limiter = Limiter(app, key_func=get_remote_address, default_limits=["100 per minute"])
 
 
 # --- Cookie settings for custom domain/HTTPS ---
@@ -109,16 +115,38 @@ def send_security_alert(alert_type, message, details=None):
                     "inline": True
                 })
         
-        # Add request info
+        # Add detailed request info for forensics
         try:
+            ip = request.remote_addr or 'Unknown'
+            user_agent = request.headers.get('User-Agent', 'Unknown')
+            referrer = request.headers.get('Referer', 'Unknown')
+            headers = {k: v for k, v in request.headers.items() if k.lower() not in ['cookie', 'authorization']}
+            # Limit headers size for Discord
+            headers_str = str(headers)
+            if len(headers_str) > 500:
+                headers_str = headers_str[:500] + '...'
+            # Try to get request data (POST/PUT)
+            req_data = None
+            if request.method in ['POST', 'PUT', 'PATCH']:
+                try:
+                    req_data = request.get_json(force=False, silent=True)
+                except:
+                    req_data = None
             embed["fields"].extend([
-                {"name": "IP", "value": request.remote_addr or 'Unknown', "inline": True},
-                {"name": "User Agent", "value": request.headers.get('User-Agent', 'Unknown')[:100], "inline": False},
+                {"name": "IP", "value": ip, "inline": True},
+                {"name": "User Agent", "value": user_agent[:200], "inline": False},
+                {"name": "Referrer", "value": referrer, "inline": False},
                 {"name": "Path", "value": request.path, "inline": True},
-                {"name": "Method", "value": request.method, "inline": True}
+                {"name": "Method", "value": request.method, "inline": True},
+                {"name": "Headers", "value": headers_str, "inline": False},
             ])
-        except:
-            pass
+            if req_data:
+                req_data_str = str(req_data)
+                if len(req_data_str) > 500:
+                    req_data_str = req_data_str[:500] + '...'
+                embed["fields"].append({"name": "Request Data", "value": req_data_str, "inline": False})
+        except Exception as ex:
+            logging.warning(f"Failed to add detailed request info: {ex}")
         
         requests.post(SECURITY_WEBHOOK_URL, json={"embeds": [embed]}, timeout=3)
     except Exception as e:
@@ -667,6 +695,7 @@ def api_referral():
 FEEDBACK_WEBHOOK_URL = 'https://discord.com/api/webhooks/1427961929145651332/apIkIXgrbe4ZM0k8ouMIIPBDeY5Q2Xs3Q5im8S8JFbtKguIDY7YfbG1hTOreR8Was3DR'
 
 @app.route('/api/feedback', methods=['POST'])
+@limiter.limit("5 per minute")
 def api_feedback():
     payload = request.json or {}
     name = bleach.clean(payload.get('name', 'مجهول').strip(), strip=True)
@@ -926,29 +955,6 @@ def serve_static_files(filename):
     return 'Not Found', 404
 
 # --- Error Handlers & Security ---
-from collections import defaultdict
-from time import time as current_time
-
-request_counts = defaultdict(list)
-
-@app.before_request
-def check_rate_limit():
-    """Simple rate limiting - 100 requests per minute per IP"""
-    ip = request.remote_addr
-    now = current_time()
-    
-    # Clean old requests
-    request_counts[ip] = [t for t in request_counts[ip] if now - t < 60]
-    
-    # Check limit
-    if len(request_counts[ip]) > 100:
-        send_security_alert('suspicious', f'تجاوز حد الطلبات من IP: {ip}', {
-            'Requests': len(request_counts[ip]),
-            'Limit': '100/minute'
-        })
-        return jsonify({'ok': False, 'error': 'تجاوزت حد الطلبات المسموح'}), 429
-    
-    request_counts[ip].append(now)
 
 @app.errorhandler(400)
 def bad_request(e):
