@@ -28,8 +28,7 @@ app = Flask(__name__)
 # This will be set after imports
 app.permanent_session_lifetime = timedelta(days=7)
 
-# CSRF protection
-csrf = SeaSurf(app)
+
 
 # تفعيل CORS للأصول الموثوقة فقط
 CORS(app, origins=["https://www.skrew.ct.ws", "http://localhost:5000", "http://127.0.0.1:5000"], supports_credentials=True)
@@ -410,7 +409,6 @@ def api_check_blacklist(user_id: int):
     return jsonify({'blacklisted': False, 'user_id': user_id})
 
 # Blacklist management endpoint (for bot)
-@csrf.exempt
 @app.route('/api/blacklist/set', methods=['POST'])
 def api_set_blacklist():
     """Add or remove user from blacklist"""
@@ -455,7 +453,6 @@ def api_get_vip(user_id: int):
     tier = vip_data.get(str(user_id))
     return jsonify({'user_id': user_id, 'vip_tier': tier})
 
-@csrf.exempt
 @app.route('/api/vip/set', methods=['POST'])
 def api_set_vip():
     # Simple API key auth
@@ -592,7 +589,6 @@ def api_leaderboard():
         })
 
 # --- Points sync (from bot) ---
-@csrf.exempt
 @app.route('/api/points/update', methods=['POST'])
 def api_points_update():
     if not _require_api_key():
@@ -664,7 +660,6 @@ def api_points_update():
     return jsonify({'ok': True, 'guild_id': int(guild_id), 'user_id': int(user_id), 'entry': user_entry, 'aggregated': aggregated})
 
 # --- Servers (guilds) count sync ---
-@csrf.exempt
 @app.route('/api/servers/set', methods=['POST'])
 def api_servers_set():
     if not _require_api_key():
@@ -682,7 +677,6 @@ def api_servers_set():
     return jsonify({'ok': True, 'servers': count})
 
 # Referral system endpoint (for سكرووو_صاحب_صحبو)
-@csrf.exempt
 @app.route('/api/referral', methods=['POST'])
 def api_referral():
     payload = request.json or {}
@@ -702,7 +696,6 @@ def api_referral():
 # Feedback/Reviews endpoint - sends to Discord webhook
 FEEDBACK_WEBHOOK_URL = 'https://discord.com/api/webhooks/1427961929145651332/apIkIXgrbe4ZM0k8ouMIIPBDeY5Q2Xs3Q5im8S8JFbtKguIDY7YfbG1hTOreR8Was3DR'
 
-@csrf.exempt
 @app.route('/api/feedback', methods=['POST'])
 @limiter.limit("5 per minute")
 def api_feedback():
