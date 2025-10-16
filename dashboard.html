@@ -1341,7 +1341,7 @@
                 <div class="progress-item">
                     <div class="progress-header">
                         <span>كريدتس للترخيص البريميوم</span>
-                        <span id="license-progress-text">0 / 50 كريدت</span>
+                        <span id="license-progress-text">0 / 1000 كريدت</span>
                     </div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="license-progress" style="width: 0%"></div>
@@ -1351,7 +1351,7 @@
 
             <!-- Shop Section - سكرووو صاحب صحبه -->
             <div class="shop-section">
-                <h3 style="margin-bottom: 1.5rem; color: #333;">🛒 المتجر</h3>
+                <h3 class="shop-header" style="margin-bottom: 1.5rem;">🛒 المتجر</h3>
                 
                 <div class="shop-item">
                     <img src="skrou.png" alt="سكرووو صاحب صحبه" class="shop-item-image">
@@ -1362,7 +1362,7 @@
                         </p>
                         <div class="shop-item-price">
                             <span class="price-label">السعر:</span>
-                            <span class="price-value">50 💎 كريدت</span>
+                            <span class="price-value">1000 💎 كريدت</span>
                         </div>
                         <div class="shop-item-status" id="shop-status">
                             <span id="credits-available">لديك: 0 💎</span>
@@ -1408,7 +1408,10 @@
                     <div class="action-title">شراء الترخيص البريميوم</div>
                     <div class="action-desc">احصل على أوامر خاصة ومميزات إضافية</div>
                     <button class="action-btn" id="buy-premium-btn" onclick="purchaseLicense()">
-                        شراء مقابل 50 كريدت
+                        شراء مقابل 1000 كريدت
+        body.night-mode .shop-header {
+            color: #e8e8e8 !important;
+        }
                     </button>
                 </div>
 
@@ -1684,15 +1687,15 @@
             document.getElementById('premium-progress').style.width = premiumProgress + '%';
             document.getElementById('premium-progress-text').textContent = `${stats.points} / ${premiumTarget} نقطة`;
 
-            // License progress (towards 50 credits)
-            const licenseTarget = 50;
+            // License progress (towards 1000 credits)
+            const licenseTarget = 1000;
             const licenseProgress = Math.min((stats.credits / licenseTarget) * 100, 100);
             document.getElementById('license-progress').style.width = licenseProgress + '%';
             document.getElementById('license-progress-text').textContent = `${stats.credits.toFixed(1)} / ${licenseTarget} كريدت`;
 
             // Update purchase button
             const buyBtn = document.getElementById('buy-premium-btn');
-            if (buyBtn && stats.credits >= 50) {
+            if (buyBtn && stats.credits >= 1000) {
                 buyBtn.textContent = 'مفعل ✓';
                 buyBtn.disabled = true;
                 buyBtn.style.background = '#28a745';
@@ -1792,8 +1795,8 @@
 
         async function purchaseLicense() {
             if (!userData || !userStats) return;
-            if (userStats.credits < 50) {
-                showModal('رصيد غير كافي! تحتاج إلى 50 كريدت على الأقل لشراء الترخيص البريميوم.', 'error');
+            if (userStats.credits < 1000) {
+                showModal('رصيد غير كافي! تحتاج إلى 1000 كريدت على الأقل لشراء الترخيص البريميوم.', 'error');
                 return;
             }
             try {
