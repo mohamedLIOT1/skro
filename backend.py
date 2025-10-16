@@ -75,7 +75,10 @@ app.secret_key = SECRET_KEY_VALUE
 
 # Debug: Print loaded values
 print(f"🔑 CLIENT_ID: {DISCORD_CLIENT_ID}")
-print(f"🔐 CLIENT_SECRET: ***{DISCORD_CLIENT_SECRET[-4:]}")
+if DISCORD_CLIENT_SECRET:
+    print(f"🔐 CLIENT_SECRET: ***{DISCORD_CLIENT_SECRET[-4:]}")
+else:
+    print("🔐 CLIENT_SECRET: [NOT SET]")
 print(f"🔗 REDIRECT_URI: {DISCORD_REDIRECT_URI}")
 DISCORD_OAUTH_BASE = 'https://discord.com/api/oauth2'
 DISCORD_API_BASE = 'https://discord.com/api'
