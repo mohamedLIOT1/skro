@@ -41,6 +41,7 @@ VIP_FILE = os.path.join(DATA_DIR, 'vip_members.json')
 SERVERS_FILE = os.path.join(DATA_DIR, 'servers.json')
 REFERRALS_FILE = os.path.join(DATA_DIR, 'referrals.json')
 USERS_FILE = os.path.join(DATA_DIR, 'users.json')  # unique users who logged into website
+BLACKLIST_FILE = os.path.join(DATA_DIR, 'blacklist.json')  # blacklisted users
 
 # Create data directory if it doesn't exist
 os.makedirs(DATA_DIR, exist_ok=True)
@@ -224,10 +225,17 @@ def api_user_points(user_id: int):
     vip_data = load_json(VIP_FILE, {})
     vip_tier = vip_data.get(str(user_id))
 
+    # Blacklist status
+    blacklist_data = load_json(BLACKLIST_FILE, {})
+    blacklist_info = blacklist_data.get(str(user_id))
+
     return jsonify({
         'user_id': user_id,
         'stats': aggregated,
-        'vip_tier': vip_tier
+        'vip_tier': vip_tier,
+        'blacklisted': blacklist_info is not None,
+        'blacklist_reason': blacklist_info.get('reason') if blacklist_info else None,
+        'blacklist_date': blacklist_info.get('date') if blacklist_info else None
     })
 
 @app.route('/api/user/<int:user_id>/license')
@@ -330,6 +338,61 @@ def api_owner_check(user_id: int):
     owner_data = load_json(owner_config_file, {'owner_ids': []})
     is_owner = user_id in owner_data.get('owner_ids', [])
     return jsonify({'is_owner': is_owner, 'user_id': user_id})
+
+# Blacklist check endpoint
+@app.route('/api/blacklist/<int:user_id>')
+def api_check_blacklist(user_id: int):
+    """Check if user is blacklisted"""
+    blacklist_data = load_json(BLACKLIST_FILE, {})
+    user_blacklist = blacklist_data.get(str(user_id))
+    
+    if user_blacklist:
+        return jsonify({
+            'blacklisted': True,
+            'user_id': user_id,
+            'reason': user_blacklist.get('reason', 'غير محدد'),
+            'date': user_blacklist.get('date'),
+            'by': user_blacklist.get('by', 'الإدارة')
+        })
+    return jsonify({'blacklisted': False, 'user_id': user_id})
+
+# Blacklist management endpoint (for bot)
+@app.route('/api/blacklist/set', methods=['POST'])
+def api_set_blacklist():
+    """Add or remove user from blacklist"""
+    if not _require_api_key():
+        return jsonify({'ok': False, 'error': 'غير مصرح'}), 401
+    
+    payload = request.json or {}
+    user_id = str(payload.get('user_id'))
+    action = payload.get('action', 'add')  # 'add' or 'remove'
+    reason = payload.get('reason', 'مخالفة القواعد')
+    by_user = payload.get('by', 'الإدارة')
+    
+    if not user_id:
+        return jsonify({'ok': False, 'error': 'user_id مفقود'}), 400
+    
+    blacklist_data = load_json(BLACKLIST_FILE, {})
+    
+    if action == 'add':
+        blacklist_data[user_id] = {
+            'reason': reason,
+            'date': datetime.utcnow().isoformat(),
+            'by': by_user
+        }
+        save_json(BLACKLIST_FILE, blacklist_data)
+        logging.info(f"🚫 User {user_id} added to blacklist. Reason: {reason}")
+        return jsonify({'ok': True, 'action': 'added', 'user_id': int(user_id)})
+    
+    elif action == 'remove':
+        if user_id in blacklist_data:
+            del blacklist_data[user_id]
+            save_json(BLACKLIST_FILE, blacklist_data)
+            logging.info(f"✅ User {user_id} removed from blacklist")
+            return jsonify({'ok': True, 'action': 'removed', 'user_id': int(user_id)})
+        return jsonify({'ok': False, 'error': 'المستخدم ليس في البلاك ليست'}), 404
+    
+    return jsonify({'ok': False, 'error': 'action غير صالح'}), 400
 
 # --- VIP endpoints for sync with the bot ---
 @app.route('/api/vip/<int:user_id>')
@@ -725,31 +788,31 @@ def discord_callback():
             save_json(USERS_FILE, users_db)
             
             # Check if new user for referral tracking
-            new_user = 'last_login' not in users_db.get(user_id, {}) or len(users_db) == 1
+            is_new_user = user_id not in users_db
 
             # Check for referral in session
-            inviter_id = session.pop('referral_inviter', None)
-            if new_user and inviter_id and inviter_id != str(user_data['id']):
+            inviter_id = session.pop('referral_from', None)
+            if is_new_user and inviter_id and inviter_id != str(user_data['id']):
                 # Prevent self-referral
                 referrals = load_json(REFERRALS_FILE, {})
                 key = f'{inviter_id}:{user_data["id"]}'
                 if key not in referrals:
-                    # Reward inviter with 10 points (guild_id=0 for global)
+                    # Reward inviter with 100 points = 10 credits (guild_id=0 for global)
                     points = load_json(POINTS_FILE, {})
                     guild_id = '0'
-                    inviter_entry = points.get(guild_id, {}).get(inviter_id)
-                    if not inviter_entry:
-                        inviter_entry = {'points': 0, 'wins': 0, 'games': 0, 'best': 0, 'total_score': 0}
-                    inviter_entry['points'] += 10
-                    # Save back
                     if guild_id not in points:
                         points[guild_id] = {}
+                    inviter_entry = points[guild_id].get(inviter_id)
+                    if not inviter_entry:
+                        inviter_entry = {'points': 0, 'wins': 0, 'games': 0, 'best': 0, 'total_score': 0}
+                    inviter_entry['points'] += 100  # 100 points = 10 credits
+                    # Save back
                     points[guild_id][inviter_id] = inviter_entry
                     save_json(POINTS_FILE, points)
                     # Log referral
-                    referrals[key] = {'ts': int(time.time())}
+                    referrals[key] = {'ts': int(time.time()), 'reward': 100}
                     save_json(REFERRALS_FILE, referrals)
-                    logging.info(f"Referral: {inviter_id} invited {user_data['id']} (10 points awarded)")
+                    logging.info(f"✅ Referral: {inviter_id} invited {user_data['id']} (100 points = 10 credits awarded)")
         except Exception as e:
             logging.warning(f"Failed referral logic: {e}")
 
