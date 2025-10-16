@@ -34,8 +34,10 @@ csrf = SeaSurf(app)
 # تفعيل CORS للأصول الموثوقة فقط
 CORS(app, origins=["https://www.skrew.ct.ws", "http://localhost:5000", "http://127.0.0.1:5000"], supports_credentials=True)
 
+
 # Rate limiting (brute force protection)
-limiter = Limiter(app, key_func=get_remote_address, default_limits=["100 per minute"])
+limiter = Limiter(key_func=get_remote_address, default_limits=["100 per minute"])
+limiter.init_app(app)
 
 
 # --- Cookie settings for custom domain/HTTPS ---
