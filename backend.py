@@ -1,4 +1,5 @@
 
+
 import os
 import json
 import time
@@ -9,9 +10,15 @@ from dotenv import load_dotenv
 from urllib.parse import urlencode
 import requests
 from flask import Flask, jsonify, session, redirect, request, url_for, make_response, send_from_directory
+from flask_cors import CORS
+import bleach
 from datetime import timedelta, datetime
+# CSRF protection
+from flask_seasurf import SeaSurf
 
 load_dotenv()  # Load .env if exists
+
+
 
 
 
@@ -20,13 +27,19 @@ app = Flask(__name__)
 # This will be set after imports
 app.permanent_session_lifetime = timedelta(days=7)
 
+# CSRF protection
+csrf = SeaSurf(app)
+
+# تفعيل CORS للأصول الموثوقة فقط
+CORS(app, origins=["https://www.skrew.ct.ws", "http://localhost:5000", "http://127.0.0.1:5000"], supports_credentials=True)
+
+
 # --- Cookie settings for custom domain/HTTPS ---
-# More permissive settings for better compatibility across different hosting platforms
 is_production = os.environ.get('RAILWAY_ENVIRONMENT') or os.environ.get('RENDER')
 app.config.update(
     SESSION_COOKIE_SAMESITE="Lax",
-    SESSION_COOKIE_SECURE=bool(is_production),  # Only secure in production
-    SESSION_COOKIE_HTTPONLY=False,  # Allow JS access for debugging
+    SESSION_COOKIE_SECURE=True if is_production else False,
+    SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_DOMAIN=None,
     SESSION_COOKIE_PATH='/'
 )
@@ -46,14 +59,13 @@ BLACKLIST_FILE = os.path.join(DATA_DIR, 'blacklist.json')  # blacklisted users
 # Create data directory if it doesn't exist
 os.makedirs(DATA_DIR, exist_ok=True)
 
-# Discord OAuth Config - Direct values (no env vars needed)
-DISCORD_CLIENT_ID = '1424342801801416834'
-DISCORD_CLIENT_SECRET = '0Wz9RdaBDLXIRkeacKL99kAwrOBHfteS'
-DISCORD_REDIRECT_URI = 'https://www.skrew.ct.ws/auth/discord/callback'
 
-# Secret key for Flask sessions
-SECRET_KEY_VALUE = '492bf62f7c5918057247d2a810c7644d3da99a01b59d49527566219cf296c8c4'
-app.secret_key = SECRET_KEY_VALUE  # Set the secret key here
+# استخدم متغيرات البيئة للأسرار (يجب وضعها في .env وعدم رفعها)
+DISCORD_CLIENT_ID = os.environ.get('DISCORD_CLIENT_ID')
+DISCORD_CLIENT_SECRET = os.environ.get('DISCORD_CLIENT_SECRET')
+DISCORD_REDIRECT_URI = os.environ.get('DISCORD_REDIRECT_URI', 'https://www.skrew.ct.ws/auth/discord/callback')
+SECRET_KEY_VALUE = os.environ.get('SECRET_KEY_VALUE')
+app.secret_key = SECRET_KEY_VALUE
 
 # Debug: Print loaded values
 print(f"🔑 CLIENT_ID: {DISCORD_CLIENT_ID}")
@@ -657,17 +669,17 @@ FEEDBACK_WEBHOOK_URL = 'https://discord.com/api/webhooks/1427961929145651332/apI
 @app.route('/api/feedback', methods=['POST'])
 def api_feedback():
     payload = request.json or {}
-    name = payload.get('name', 'مجهول').strip()
-    feedback = payload.get('feedback', '').strip()
+    name = bleach.clean(payload.get('name', 'مجهول').strip(), strip=True)
+    feedback = bleach.clean(payload.get('feedback', '').strip(), strip=True)
     rating = payload.get('rating', 0)
-    feedback_type = payload.get('type', 'general')
-    
+    feedback_type = bleach.clean(payload.get('type', 'general'), strip=True)
+
     if not feedback:
         return jsonify({'ok': False, 'error': 'الرجاء كتابة رأيك'}), 400
-    
+
     if len(feedback) > 1000:
         return jsonify({'ok': False, 'error': 'الرأي طويل جداً (الحد الأقصى 1000 حرف)'}), 400
-    
+
     # Type labels and colors
     type_info = {
         'general': {'label': '💬 رأي عام', 'color': 5814783},
@@ -675,9 +687,9 @@ def api_feedback():
         'feature': {'label': '💡 اقتراح ميزة', 'color': 5763719},
         'support': {'label': '🆘 طلب دعم', 'color': 15844367}
     }
-    
+
     type_data = type_info.get(feedback_type, type_info['general'])
-    
+
     # Prepare Discord embed
     stars = '⭐' * min(int(rating), 5) if rating else 'بدون تقييم'
     embed = {
@@ -691,7 +703,7 @@ def api_feedback():
         "footer": {"text": "موقع سكرو - صفحة الآراء"},
         "timestamp": datetime.utcnow().isoformat()
     }
-    
+
     try:
         response = requests.post(
             FEEDBACK_WEBHOOK_URL,
