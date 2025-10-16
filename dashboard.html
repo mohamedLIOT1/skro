@@ -1241,6 +1241,9 @@
                     <p style="margin-top: 1rem; font-size: 0.95rem; opacity: 0.9;">
                         💬 للاستفسار عن سبب الحظر أو طلب رفع الحظر، تواصل مع إدارة البوت
                     </p>
+                    <button onclick="location.reload()" style="margin-top: 1rem; padding: 10px 20px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600;">
+                        🔄 تحديث الحالة
+                    </button>
                 </div>
             </div>
             
@@ -1564,9 +1567,10 @@
         }
 
         function displayUserData(user, stats, vipTier, blacklisted, blacklistReason, blacklistDate) {
-            // Show blacklist warning if user is blacklisted
+            // Show or hide blacklist warning based on blacklist status
+            const blacklistWarning = document.getElementById('blacklist-warning');
+            
             if (blacklisted) {
-                const blacklistWarning = document.getElementById('blacklist-warning');
                 const reasonText = document.getElementById('blacklist-reason-text');
                 const dateText = document.getElementById('blacklist-date');
                 
@@ -1585,6 +1589,9 @@
                 } else {
                     dateText.textContent = 'غير محدد';
                 }
+            } else {
+                // إخفاء رسالة البلاك ليست إذا لم يكن المستخدم محظوراً
+                blacklistWarning.style.display = 'none';
             }
             
             // User profile
