@@ -250,9 +250,9 @@ def api_user_points(user_id: int):
 
 @app.route('/api/user/<int:user_id>/license')
 def api_user_license(user_id: int):
-    # Placeholder: لو عنده كريدت >= 50 نعتبره عنده لايسنس بريميوم
+    # Placeholder: لو عنده كريدت >= 1000 نعتبره عنده لايسنس بريميوم
     user_points = api_user_points(user_id).json
-    has_license = user_points['stats']['credits'] >= 50
+    has_license = user_points['stats']['credits'] >= 1000
     return jsonify({
         'user_id': user_id,
         'has_license': has_license
@@ -265,11 +265,11 @@ def api_purchase_license(user_id: int):
     user_points_resp = api_user_points(user_id)
     data = user_points_resp.json
     credits = data['stats']['credits']
-    cost = 50
+    cost = 1000
     if target == 'bot_instance':
         cost = 80
     if credits < cost:
-        return jsonify({'ok': False, 'error': 'رصيد غير كافي'}), 400
+        return jsonify({'ok': False, 'error': f'رصيد غير كافي. تحتاج إلى {cost} كريدت.'}), 400
     # NOTE: هنا المفروض ننقص النقاط فعلياً ونخزن عملية الشراء في قاعدة بيانات حقيقية
     return jsonify({'ok': True, 'message': 'تم منح الترخيص مؤقتاً (محاكاة)', 'product': target})
 
