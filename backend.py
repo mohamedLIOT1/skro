@@ -324,10 +324,19 @@ def api_check_friend_mode(user_id: int):
     purchases = load_json(FRIEND_MODE_FILE, {})
     purchased = str(user_id) in purchases
     purchase_date = purchases.get(str(user_id), {}).get('date') if purchased else None
+
+    # Check if user is premium (credits >= 1000 or has_license)
+    user_points = api_user_points(user_id).json
+    is_premium = user_points['stats']['credits'] >= 1000
+    # If you have premium, you own all modes
+    if is_premium:
+        purchased = True
+
     return jsonify({
         'user_id': user_id,
         'purchased': purchased,
-        'purchase_date': purchase_date
+        'purchase_date': purchase_date,
+        'is_premium': is_premium
     })
 
 @app.route('/api/user/<int:user_id>/purchase-friend-mode', methods=['POST'])

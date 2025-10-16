@@ -1354,7 +1354,10 @@
             <!-- Shop Section - سكرووو صاحب صحبه -->
             <div class="shop-section">
                 <h3 class="shop-header" style="margin-bottom: 1.5rem;">🛒 المتجر</h3>
-                
+                <div style="background: #f8f8ff; color: #333; border-radius: 10px; padding: 10px 18px; margin-bottom: 18px; font-size: 1.05rem; border: 1px solid #e0e0e0;">
+                    <b>ملاحظة:</b> عند شرائك البريميوم ستحصل تلقائيًا على جميع المودات الحالية والمستقبلية مجانًا.<br>
+                    <span style="color:#764ba2;font-size:0.98em;">شراء مود منفصل لا يمنحك البريميوم.</span>
+                </div>
                 <div class="shop-item">
                     <img src="skrou.png" alt="سكرووو صاحب صحبه" class="shop-item-image">
                     <div class="shop-item-info">
@@ -1710,14 +1713,19 @@
         }
 
         async function checkFriendModePurchase() {
-            if (!userData) return;
-            
+            if (!userData || !userStats) return;
+            const buyBtn = document.getElementById('buy-friend-mode');
+            // إذا كان المستخدم بريميوم (credits >= 1000 أو vipTier موجود)
+            if ((userStats.credits >= 1000) || (typeof vipTier !== 'undefined' && vipTier)) {
+                buyBtn.textContent = 'مفعل ✓ (بريميوم)';
+                buyBtn.disabled = true;
+                buyBtn.classList.add('purchased');
+                return;
+            }
             try {
                 const response = await fetch(`/api/user/${userData.id}/friend-mode`);
                 if (response.ok) {
                     const data = await response.json();
-                    const buyBtn = document.getElementById('buy-friend-mode');
-                    
                     if (data.purchased) {
                         buyBtn.textContent = 'مفعل ✓';
                         buyBtn.disabled = true;
@@ -1725,6 +1733,10 @@
                     } else if (userStats.credits < 50) {
                         buyBtn.textContent = `يحتاج ${(50 - userStats.credits).toFixed(1)} 💎 إضافية`;
                         buyBtn.disabled = true;
+                    } else {
+                        buyBtn.textContent = 'شراء الآن';
+                        buyBtn.disabled = false;
+                        buyBtn.classList.remove('purchased');
                     }
                 }
             } catch (error) {
