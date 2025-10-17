@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://cdn.discordapp.com; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - بوت سكرو</title>
+    <title>لوحة التحكم - بوت 𝑮𝑹𝑬𝑽𝑶</title>
     <style>
         * {
             margin: 0;
@@ -1214,7 +1214,7 @@
     <!-- Header -->
     <div class="header">
         <div class="logo">
-            🎮 بوت سكرو - لوحة التحكم
+            🎮 بوت 𝑮𝑹𝑬𝑽𝑶 - لوحة التحكم
         </div>
         <div class="nav-buttons">
             <div class="night-mode-toggle" id="night-mode-toggle" onclick="toggleNightMode()" title="الوضع الليلي">
@@ -1351,7 +1351,7 @@
                 </div>
             </div>
 
-            <!-- Shop Section - سكرووو صاحب صحبه -->
+            <!-- Shop Section - 𝑺𝑹𝑬𝑽𝑶 صاحب صحبه -->
             <div class="shop-section">
                 <h3 class="shop-header" style="margin-bottom: 1.5rem;">🛒 المتجر</h3>
                 <div style="background: #f8f8ff; color: #333; border-radius: 10px; padding: 10px 18px; margin-bottom: 18px; font-size: 1.05rem; border: 1px solid #e0e0e0;">
@@ -1359,9 +1359,9 @@
                     <span style="color:#764ba2;font-size:0.98em;">شراء مود منفصل لا يمنحك البريميوم.</span>
                 </div>
                 <div class="shop-item">
-                    <img src="skrou.png" alt="سكرووو صاحب صحبه" class="shop-item-image">
+                    <img src="skrou.png" alt="𝑺𝑹𝑬𝑽𝑶 صاحب صحبه" class="shop-item-image">
                     <div class="shop-item-info">
-                        <h4 class="shop-item-title">🎮 سكرووو صاحب صحبه</h4>
+                        <h4 class="shop-item-title">🎮 𝑺𝑹𝑬𝑽𝑶 صاحب صحبه</h4>
                         <p class="shop-item-description">
                             قدر تلعب مع صحابك في وضع صاحب صحبه الممتع! ادعي أصدقائك واربح نقاط إضافية.
                         </p>
@@ -1752,7 +1752,7 @@
                 return;
             }
             
-            if (confirm('هل أنت متأكد من شراء وضع "سكرووو صاحب صحبه" مقابل 50 كريدت؟')) {
+            if (confirm('هل أنت متأكد من شراء وضع "𝑺𝑹𝑬𝑽𝑶 صاحب صحبه" مقابل 50 كريدت؟')) {
                 try {
                     const response = await fetch(`/api/user/${userData.id}/purchase-friend-mode`, {
                         method: 'POST',
@@ -1763,7 +1763,7 @@
                     
                     if (response.ok) {
                         const data = await response.json();
-                        showModal('🎉 تم الشراء بنجاح!<br><br>تم تفعيل وضع <b>سكرووو صاحب صحبه</b><br>يمكنك الآن استخدامه مع أصدقائك!', 'success');
+                        showModal('🎉 تم الشراء بنجاح!<br><br>تم تفعيل وضع <b>𝑺𝑹𝑬𝑽𝑶 صاحب صحبه</b><br>يمكنك الآن استخدامه مع أصدقائك!', 'success');
                         
                         // Update user stats
                         userStats.credits = data.new_credits;
