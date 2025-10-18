@@ -766,20 +766,10 @@ def discord_login():
     session.permanent = True
     session['oauth_state'] = state
     session.modified = True
-    params = {
-        'client_id': DISCORD_CLIENT_ID,
-        'response_type': 'code',
-        'redirect_uri': DISCORD_REDIRECT_URI,
-        # إضافة الصلاحيات الجديدة لرؤية كل الرومات
-        'scope': ' '.join(OAUTH_SCOPES),
-        'state': state,
-        'prompt': 'consent',
-           # إضافة صلاحيات البوت (تم التحديث بناءً على طلب المستخدم)
-           'permissions': '3941734153714752'  # صلاحيات مخصصة من المستخدم
-    }
-    # تعليق: هذا هو رابط الدعوة النهائي الذي يسمح للبوت برؤية كل الرومات
-    print(f"🔗 رابط دعوة البوت: {DISCORD_OAUTH_BASE}/authorize?{urlencode(params)}")
-    return redirect(f"{DISCORD_OAUTH_BASE}/authorize?{urlencode(params)}")
+    # رابط دعوة البوت الثابت كما طلب المستخدم
+    invite_url = "https://discord.com/oauth2/authorize?client_id=1424342801801416834&permissions=3941734153714752&scope=bot%20applications.commands"
+    print(f"🔗 رابط دعوة البوت: {invite_url}")
+    return redirect(invite_url)
 
 @app.route('/auth/discord/callback')
 def discord_callback():
