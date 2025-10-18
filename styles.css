@@ -77,12 +77,8 @@ body {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    min-height: 100dvh;
-    min-height: -webkit-fill-available;
-    height: 100dvh;
-    height: -webkit-fill-available;
-    overflow: hidden;
-    overscroll-behavior: none;
+    /* allow normal scrolling */
+    min-height: 100vh;
     touch-action: manipulation;
 }
 
@@ -272,10 +268,7 @@ body {
 
 /* Hero Section */
 .hero {
-    min-height: 100dvh;
-    min-height: -webkit-fill-available;
-    height: 100dvh;
-    height: -webkit-fill-available;
+    min-height: 100vh;
     padding-top: 100px;
     padding-bottom: var(--spacing-3xl);
     background:
@@ -283,7 +276,6 @@ body {
         linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
     text-align: center;
     position: relative;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
