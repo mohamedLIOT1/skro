@@ -82,7 +82,7 @@ print(f"🔗 REDIRECT_URI: {DISCORD_REDIRECT_URI}")
 DISCORD_OAUTH_BASE = 'https://discord.com/api/oauth2'
 DISCORD_API_BASE = 'https://discord.com/api'
 
-OAUTH_SCOPES = ['identify', 'guilds']
+OAUTH_SCOPES = ['identify', 'guilds', 'guilds.members.read']
 
 # API key for bot-to-website VIP sync (change this to a private value if needed)
 VIP_API_KEY = os.getenv('VIP_API_KEY', 'skro_vip_api_key_change_me')
@@ -764,19 +764,40 @@ def api_feedback():
 def discord_login():
     if not DISCORD_CLIENT_ID:
         return 'خادم غير مهيأ (اضبط env DISCORD_CLIENT_ID)', 500
+    # generate state for OAuth (kept for compatibility if needed)
     state = secrets.token_hex(16)
     session.permanent = True
     session['oauth_state'] = state
     session.modified = True
-    params = {
-        'client_id': DISCORD_CLIENT_ID,
-        'response_type': 'code',
-        'redirect_uri': DISCORD_REDIRECT_URI,
-        'scope': ' '.join(OAUTH_SCOPES),
-        'state': state,
-        'prompt': 'consent'
-    }
-    return redirect(f"{DISCORD_OAUTH_BASE}/authorize?{urlencode(params)}")
+
+    # صلاحيات مخصصة: View Channels + Send Messages + Read Message History
+    # permissions = 68608
+    invite_url = (
+        f"https://discord.com/oauth2/authorize?client_id={DISCORD_CLIENT_ID}"
+        "&permissions=68608&scope=bot%20applications.commands"
+    )
+
+    # صفحة وسيطة تفتح رابط الدعوة في نافذة جديدة ثم تعيد المستخدم للموقع
+    html = f'''
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <title>إضافة البوت</title>
+        <script>
+            window.onload = function() {{
+                try {{ window.open("{invite_url}", "_blank"); }} catch(e) {{ /* fallthrough */ }}
+                setTimeout(function() {{ window.location.href = "/dashboard"; }}, 1000);
+            }}
+        </script>
+    </head>
+    <body style="text-align:center;direction:rtl;font-family:Tahoma,Arial,sans-serif;">
+        <h2>جاري تحويلك لإضافة البوت...</h2>
+        <p>إذا لم يتم التحويل تلقائياً <a href="{invite_url}" target="_blank">اضغط هنا لإضافة البوت</a></p>
+        <p>بعد إضافة البوت سيتم إعادتك تلقائياً للوحة التحكم.</p>
+    </body>
+    </html>
+    '''
+    return html
 
 @app.route('/auth/discord/callback')
 def discord_callback():
