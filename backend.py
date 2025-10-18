@@ -421,8 +421,7 @@ def api_check_blacklist(user_id: int):
 @app.route('/api/blacklist/set', methods=['POST'])
 def api_set_blacklist():
     """Add or remove user from blacklist"""
-    if not _require_api_key():
-        return jsonify({'ok': False, 'error': 'غير مصرح'}), 401
+    # تم إلغاء الحماية: يقبل أي طلب من البوت
     
     payload = request.json or {}
     user_id = str(payload.get('user_id'))
@@ -465,8 +464,7 @@ def api_get_vip(user_id: int):
 @app.route('/api/vip/set', methods=['POST'])
 def api_set_vip():
     # Simple API key auth
-    if not _require_api_key():
-        return jsonify({'ok': False, 'error': 'غير مصرح'}), 401
+    # تم إلغاء الحماية: يقبل أي طلب من البوت
     payload = request.json or {}
     user_id = str(payload.get('user_id'))
     tier = payload.get('vip_tier')  # None or string like "Diamond" | "Gold" | "Silver"
@@ -600,8 +598,7 @@ def api_leaderboard():
 # --- Points sync (from bot) ---
 @app.route('/api/points/update', methods=['POST'])
 def api_points_update():
-    if not _require_api_key():
-        return jsonify({'ok': False, 'error': 'غير مصرح'}), 401
+    # تم إلغاء الحماية: يقبل أي طلب من البوت
     body = request.json or {}
     guild_id = str(body.get('guild_id'))
     user_id = str(body.get('user_id'))
@@ -671,8 +668,7 @@ def api_points_update():
 # --- Servers (guilds) count sync ---
 @app.route('/api/servers/set', methods=['POST'])
 def api_servers_set():
-    if not _require_api_key():
-        return jsonify({'ok': False, 'error': 'غير مصرح'}), 401
+    # تم إلغاء الحماية: يقبل أي طلب من البوت
     body = request.json or {}
     count = body.get('servers')
     if count is None:
