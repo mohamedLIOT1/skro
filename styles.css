@@ -68,6 +68,7 @@
 html {
     font-size: 16px;
     scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 body {
@@ -80,6 +81,7 @@ body {
     /* allow normal scrolling */
     min-height: 100vh;
     touch-action: manipulation;
+    overflow-x: hidden;
 }
 
 /* Container */
@@ -138,6 +140,8 @@ body {
     border-radius: var(--radius-2xl);
     box-shadow: var(--shadow-xl);
     margin-bottom: 12px;
+    max-width: 90vw;
+    max-height: 30vw;
 }
 
 .nav-links {
@@ -329,13 +333,14 @@ body {
 }
 
 .hero-title {
-    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-size: clamp(2rem, 6vw, 3.5rem);
     font-weight: 700;
     margin-bottom: var(--spacing-md);
     background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    word-break: break-word;
 }
 
 .hero-description {
@@ -941,19 +946,27 @@ body {
 
 /* Extra small devices */
 @media (max-width: 480px) {
-    html {
-        font-size: 14px;
+    .hero {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        margin-left: 0;
+        margin-right: 0;
+        overflow-x: hidden;
     }
-    
-    .container {
-        padding: 0 var(--spacing-sm);
+    .hero-logo-img {
+        width: 70px;
+        height: 70px;
+        max-width: 70vw;
+        max-height: 20vw;
     }
-    
-    .navbar {
-        padding: var(--spacing-sm) 0;
+    .hero-title {
+        font-size: 1.5rem;
+        text-align: center;
     }
-    
-    .brand {
+    .hero-description {
+        font-size: 0.95rem;
+        text-align: center;
+    }
         font-size: 1rem;
     }
     
