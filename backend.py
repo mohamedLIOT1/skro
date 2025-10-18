@@ -769,7 +769,29 @@ def discord_login():
     # رابط دعوة البوت الثابت كما طلب المستخدم
     invite_url = "https://discord.com/oauth2/authorize?client_id=1424342801801416834&permissions=3941734153714752&scope=bot%20applications.commands"
     print(f"🔗 رابط دعوة البوت: {invite_url}")
-    return redirect(invite_url)
+    # صفحة وسيطة تفتح رابط الدعوة في نافذة جديدة ثم تعيد المستخدم للموقع
+    html = f'''
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <title>إضافة البوت</title>
+        <script>
+            window.onload = function() {{
+                window.open("{invite_url}", "_blank");
+                setTimeout(function() {{
+                    window.location.href = "/dashboard";
+                }}, 1000);
+            }}
+        </script>
+    </head>
+    <body style="text-align:center;direction:rtl;font-family:Tahoma,Arial,sans-serif;">
+        <h2>جاري تحويلك لإضافة البوت...</h2>
+        <p>إذا لم يتم التحويل تلقائياً <a href="{invite_url}" target="_blank">اضغط هنا لإضافة البوت</a></p>
+        <p>بعد إضافة البوت سيتم إعادتك تلقائياً للوحة التحكم.</p>
+    </body>
+    </html>
+    '''
+    return html
 
 @app.route('/auth/discord/callback')
 def discord_callback():
