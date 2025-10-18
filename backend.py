@@ -31,7 +31,7 @@ app.permanent_session_lifetime = timedelta(days=7)
 
 
 # تفعيل CORS للأصول الموثوقة فقط
-CORS(app, origins=["https://www.skrew.ct.ws", "http://localhost:5000", "http://127.0.0.1:5000"], supports_credentials=True)
+CORS(app, origins=["https://grevo.up.railway.app", "http://localhost:5000", "http://127.0.0.1:5000"], supports_credentials=True)
 
 
 # Rate limiting (brute force protection)
@@ -68,7 +68,7 @@ os.makedirs(DATA_DIR, exist_ok=True)
 # استخدم متغيرات البيئة للأسرار (يجب وضعها في .env وعدم رفعها)
 DISCORD_CLIENT_ID = os.environ.get('DISCORD_CLIENT_ID')
 DISCORD_CLIENT_SECRET = os.environ.get('DISCORD_CLIENT_SECRET')
-DISCORD_REDIRECT_URI = os.environ.get('DISCORD_REDIRECT_URI', 'https://www.skrew.ct.ws/auth/discord/callback')
+DISCORD_REDIRECT_URI = os.environ.get('DISCORD_REDIRECT_URI', 'https://grevo.up.railway.app/auth/discord/callback')
 SECRET_KEY_VALUE = os.environ.get('SECRET_KEY_VALUE')
 app.secret_key = SECRET_KEY_VALUE
 

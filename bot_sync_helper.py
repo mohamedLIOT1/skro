@@ -4,7 +4,7 @@
 import aiohttp
 from typing import Optional
 
-API_BASE = "https://www.skrew.ct.ws"
+API_BASE = "https://www.grevo.up.railway.app"
 API_KEY = "skro_vip_api_key_change_me"  # TODO: change to a secret value in both bot and backend
 
 HEADERS = {

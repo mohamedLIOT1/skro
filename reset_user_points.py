@@ -8,7 +8,7 @@ import requests
 USER_ID = 1064878296480895006
 GUILD_ID = "1193821158265589852"
 API_KEY = "skro_vip_api_key_change_me"
-API_URL = "https://www.skrew.ct.ws/api/points/update"
+API_URL = "https://www.grevo.up.railway.app/points/update"
 
 def reset_user_points(user_id, guild_id):
     """تصفير نقاط المستخدم"""
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     if success:
         print("\n🔍 التحقق من النقاط الجديدة...")
         verify_response = requests.get(
-            f"https://www.skrew.ct.ws/api/user/{USER_ID}/points",
+            f"https://www.grevo.up.railway.app/api/user/{USER_ID}/points",
             timeout=10
         )
         

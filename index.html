@@ -29,6 +29,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700&display=swap" rel="stylesheet">
+        <script>
+            // Update any hardcoded domain references
+            const oldDomain = "example.com"; // Replace with the actual old domain if known
+            const newDomain = "grevo.up.railway.app";
+            if (window.location.href.includes(oldDomain)) {
+                window.location.href = window.location.href.replace(oldDomain, newDomain);
+            }
+        </script>
 </head>
 <body>
     <!-- Navigation -->
