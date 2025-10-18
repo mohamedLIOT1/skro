@@ -777,7 +777,7 @@ def discord_login():
 # زر منفصل لدعوة البوت فقط
 @app.route('/invite-bot')
 def invite_bot():
-    invite_url = f"https://discord.com/oauth2/authorize?client_id={DISCORD_CLIENT_ID}&permissions=68608&scope=bot%20applications.commands"
+    invite_url = f"https://discord.com/oauth2/authorize?client_id={DISCORD_CLIENT_ID}&permissions=2147552256&scope=bot%20applications.commands"
     html = f'''
     <html>
     <head>
