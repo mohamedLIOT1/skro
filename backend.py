@@ -82,7 +82,8 @@ print(f"🔗 REDIRECT_URI: {DISCORD_REDIRECT_URI}")
 DISCORD_OAUTH_BASE = 'https://discord.com/api/oauth2'
 DISCORD_API_BASE = 'https://discord.com/api'
 
-OAUTH_SCOPES = ['identify', 'guilds']
+# عدلنا الصلاحيات ليشمل رؤية كل الرومات
+OAUTH_SCOPES = ['identify', 'guilds', 'guilds.members.read']
 
 # لم يعد هناك حاجة لـ VIP_API_KEY، كل شيء يستخدم SECRET_KEY_VALUE
 
@@ -769,10 +770,15 @@ def discord_login():
         'client_id': DISCORD_CLIENT_ID,
         'response_type': 'code',
         'redirect_uri': DISCORD_REDIRECT_URI,
+        # إضافة الصلاحيات الجديدة لرؤية كل الرومات
         'scope': ' '.join(OAUTH_SCOPES),
         'state': state,
-        'prompt': 'consent'
+        'prompt': 'consent',
+        # إضافة صلاحيات البوت (يمكنك تعديل الرقم حسب الحاجة)
+        'permissions': '268438528'  # View Channels + Send Messages + Read Messages
     }
+    # تعليق: هذا هو رابط الدعوة النهائي الذي يسمح للبوت برؤية كل الرومات
+    print(f"🔗 رابط دعوة البوت: {DISCORD_OAUTH_BASE}/authorize?{urlencode(params)}")
     return redirect(f"{DISCORD_OAUTH_BASE}/authorize?{urlencode(params)}")
 
 @app.route('/auth/discord/callback')
