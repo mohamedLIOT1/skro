@@ -569,7 +569,7 @@ function enhanceWelcomeMessage(user, vipTier, isOwner, stats) {
     
     if (isOwner) {
         specialTitle = '👑 المطور الأساسي';
-        specialGreeting = `أهلاً وسهلاً بك يا ${userName}! شرف كبير وجودك هنا 🌟`;
+        specialGreeting = `أهلاً بالمدير 👑<br><span style="font-size:1.1em;color:#FFD700;font-weight:bold;">${userName}</span>`;
         specialStyle = `
             background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 193, 7, 0.1) 100%);
             border: 2px solid gold;
