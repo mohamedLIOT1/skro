@@ -82,10 +82,10 @@ print(f"🔗 REDIRECT_URI: {DISCORD_REDIRECT_URI}")
 DISCORD_OAUTH_BASE = 'https://discord.com/api/oauth2'
 DISCORD_API_BASE = 'https://discord.com/api'
 
-# عدلنا الصلاحيات ليشمل رؤية كل الرومات
-OAUTH_SCOPES = ['identify', 'guilds', 'guilds.members.read']
+OAUTH_SCOPES = ['identify', 'guilds']
 
-# لم يعد هناك حاجة لـ VIP_API_KEY، كل شيء يستخدم SECRET_KEY_VALUE
+# API key for bot-to-website VIP sync (change this to a private value if needed)
+VIP_API_KEY = os.getenv('VIP_API_KEY', 'skro_vip_api_key_change_me')
 
 # Security monitoring webhook
 SECURITY_WEBHOOK_URL = 'https://discord.com/api/webhooks/1427963349970452501/p3azMQM8b8W-VvXNeXrGhEYlWPJimVayKTxLbIsRd9vZ1iDgK2MyvsYDyeDHSqYxZ_Lm'
@@ -155,7 +155,9 @@ def send_security_alert(alert_type, message, details=None):
         logging.error(f'Failed to send security alert: {e}')
 
 def _require_api_key():
-    # تعديل مؤقت: السماح بأي API Key من البوت
+    api_key = request.headers.get('X-API-Key') or request.args.get('api_key')
+    if api_key != VIP_API_KEY:
+        return False
     return True
 
 # --- JWT Helpers ---
@@ -766,32 +768,15 @@ def discord_login():
     session.permanent = True
     session['oauth_state'] = state
     session.modified = True
-    # رابط دعوة البوت الثابت كما طلب المستخدم
-    invite_url = "https://discord.com/oauth2/authorize?client_id=1424342801801416834&permissions=3941734153714752&scope=bot%20applications.commands"
-    print(f"🔗 رابط دعوة البوت: {invite_url}")
-    # صفحة وسيطة تفتح رابط الدعوة في نافذة جديدة ثم تعيد المستخدم للموقع
-    html = f'''
-    <html>
-    <head>
-        <meta charset="utf-8">
-        <title>إضافة البوت</title>
-        <script>
-            window.onload = function() {{
-                window.open("{invite_url}", "_blank");
-                setTimeout(function() {{
-                    window.location.href = "/dashboard";
-                }}, 1000);
-            }}
-        </script>
-    </head>
-    <body style="text-align:center;direction:rtl;font-family:Tahoma,Arial,sans-serif;">
-        <h2>جاري تحويلك لإضافة البوت...</h2>
-        <p>إذا لم يتم التحويل تلقائياً <a href="{invite_url}" target="_blank">اضغط هنا لإضافة البوت</a></p>
-        <p>بعد إضافة البوت سيتم إعادتك تلقائياً للوحة التحكم.</p>
-    </body>
-    </html>
-    '''
-    return html
+    params = {
+        'client_id': DISCORD_CLIENT_ID,
+        'response_type': 'code',
+        'redirect_uri': DISCORD_REDIRECT_URI,
+        'scope': ' '.join(OAUTH_SCOPES),
+        'state': state,
+        'prompt': 'consent'
+    }
+    return redirect(f"{DISCORD_OAUTH_BASE}/authorize?{urlencode(params)}")
 
 @app.route('/auth/discord/callback')
 def discord_callback():
