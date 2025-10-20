@@ -1830,7 +1830,7 @@
 
         function showReferralCode() {
             if (!userData) return;
-            const referralLink = `https://grevo.up.railway.app/invite?ref=${userData.id}`;
+            const referralLink = `https://www.grevo.ct.ws/invite?ref=${userData.id}`;
             showModal(`رابط الدعوة الخاص بك:<br><br><input type="text" value="${referralLink}" readonly onclick="this.select()" style="width:100%;padding:10px;border:2px solid #5865f2;border-radius:8px;font-size:0.9rem;text-align:center;cursor:pointer;"><br><br><button onclick="navigator.clipboard.writeText('${referralLink}');showModal('تم النسخ! 📋','success');" style="background:#5865f2;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-family:Cairo,sans-serif;font-size:1rem;">📋 نسخ الرابط</button><br><br><small style="color:#666;">شارك هذا الرابط مع أصدقائك واحصل على 10 نقاط لكل صديق جديد!</small>`, 'info');
         }
 
